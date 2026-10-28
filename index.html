@@ -81,7 +81,7 @@
             margin-bottom: 20px;
         }
 
-        h2 { color: var(--primary); font-size: 18px; margin-top: 0; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        h2 { color: var(--primary); font-size: 18px; margin-top: 0; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 
         .form-group { margin-bottom: 14px; }
         label { display: block; margin-bottom: 5px; font-weight: 700; font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
@@ -115,6 +115,7 @@
         button:active { transform: scale(0.98); }
 
         .btn-add { background: linear-gradient(135deg, #059669 0%, #34d399 100%); color: #0b0f19; margin-top: 10px; }
+        .btn-sync { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; padding: 6px 12px; font-size: 12px; width: auto; border-radius: 6px; box-shadow: none; }
         .btn-danger { background: #ef4444; color: white; width: auto; padding: 5px 10px; font-size: 11px; border-radius: 6px; box-shadow: none; }
         
         .action-btn-group { display: flex; gap: 10px; margin-top: 15px; }
@@ -243,12 +244,15 @@
 <!-- Tab 2: Search -->
 <div id="tab-search" class="tab-content no-print">
     <div class="container">
-        <h2>🔍 Search Inventory</h2>
+        <h2>
+            <span>🔍 Search Inventory</span>
+            <button type="button" class="btn-sync" onclick="syncCloudData()">🔄 Sync Cloud</button>
+        </h2>
         <div class="form-group search-box" style="margin-bottom:0;">
             <input type="text" id="searchItemNo" placeholder="Enter Item Number...">
             <button type="button" onclick="searchProduct()">Find</button>
         </div>
-        <div id="searchLoading" class="loading-msg" style="display:none;">☁️ Fetching live data from Cloud Sheet...</div>
+        <div id="searchLoading" class="loading-msg" style="display:none;">☁️ Fetching live data from Cloud...</div>
         
         <div id="searchResult" class="result-card">
             <img id="resPhoto" src="" alt="Photo">
@@ -318,6 +322,7 @@
             document.getElementById('tab-entry').classList.add('active');
         } else if(tabName === 'search') {
             document.getElementById('tab-search').classList.add('active');
+            syncCloudDataSilent(); // Auto-sync when entering search tab
         } else if(tabName === 'quotation') {
             document.getElementById('tab-quotation').classList.add('active');
         }
@@ -341,7 +346,7 @@
         if (photoInput.files && photoInput.files[0]) {
             saveBtn.disabled = true;
             saveBtn.innerText = "☁️ Saving to Cloud...";
-            msgDiv.innerText = "Processing image...";
+            msgDiv.innerText = "Processing image and syncing...";
 
             const reader = new FileReader();
             reader.onload = function(event) {
@@ -365,13 +370,13 @@
                         price: productPrice
                     };
 
-                    // 1. Save locally instantly for immediate availability
+                    // 1. Save locally
                     let localProducts = JSON.parse(localStorage.getItem('amassCloudSync')) || [];
                     let idx = localProducts.findIndex(p => String(p.itemNumber).trim().toLowerCase() === itemNumber.toLowerCase());
                     if(idx > -1) localProducts[idx] = payload; else localProducts.push(payload);
                     localStorage.setItem('amassCloudSync', JSON.stringify(localProducts));
 
-                    // 2. Send to Google Sheet Cloud
+                    // 2. Send to Google Sheet Cloud via POST
                     fetch(SCRIPT_URL, {
                         method: "POST",
                         mode: "no-cors",
@@ -397,7 +402,7 @@
         }
     });
 
-    // Bulletproof JSONP fetch to pull live items from Google Sheet
+    // JSONP fetch helper
     function fetchCloudProducts() {
         return new Promise((resolve, reject) => {
             const callbackName = 'jsonp_cb_' + Date.now();
@@ -418,6 +423,35 @@
         });
     }
 
+    async function syncCloudData() {
+        const loadingDiv = document.getElementById('searchLoading');
+        loadingDiv.style.display = "block";
+        loadingDiv.innerText = "🔄 Syncing with Cloud Google Sheet...";
+        try {
+            const cloudData = await fetchCloudProducts();
+            if(cloudData && cloudData.length > 0) {
+                localStorage.setItem('amassCloudSync', JSON.stringify(cloudData));
+                alert("✨ Cloud Synced Successfully! Total items: " + cloudData.length);
+            } else {
+                alert("Cloud Sheet is currently empty.");
+            }
+        } catch(err) {
+            alert("Sync failed! Check internet connection.");
+        }
+        loadingDiv.style.display = "none";
+    }
+
+    async function syncCloudDataSilent() {
+        try {
+            const cloudData = await fetchCloudProducts();
+            if(cloudData && cloudData.length > 0) {
+                localStorage.setItem('amassCloudSync', JSON.stringify(cloudData));
+            }
+        } catch(err) {
+            console.log("Silent background sync failed");
+        }
+    }
+
     async function searchProduct() {
         const query = document.getElementById('searchItemNo').value.trim().toLowerCase();
         const resultDiv = document.getElementById('searchResult');
@@ -427,22 +461,22 @@
 
         resultDiv.style.display = "none";
         loadingDiv.style.display = "block";
+        loadingDiv.innerText = "☁️ Searching Cloud & Local Database...";
 
         let allProducts = [];
 
-        // Try pulling live data from Cloud Google Sheet
+        // 1. Fetch fresh from cloud first
         try {
             const cloudData = await fetchCloudProducts();
             if(cloudData && cloudData.length > 0) {
                 allProducts = cloudData;
-                // Update local storage cache with cloud data
                 localStorage.setItem('amassCloudSync', JSON.stringify(cloudData));
             }
         } catch(err) {
-            console.log("Cloud pull failed, checking local storage cache");
+            console.log("Cloud fetch error during search");
         }
 
-        // Fallback to local storage if cloud failed or returned empty
+        // 2. Fallback to local storage cache
         if(!allProducts || allProducts.length === 0) {
             allProducts = JSON.parse(localStorage.getItem('amassCloudSync')) || [];
         }
@@ -450,7 +484,7 @@
         loadingDiv.style.display = "none";
 
         if(!allProducts || allProducts.length === 0) {
-            alert("No products found! Please add a product first.");
+            alert("No products found in database!");
             return;
         }
 
