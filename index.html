@@ -3,154 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Business Product & Quotation Manager</title>
+    <title>Business Pro Manager</title>
     <style>
         :root {
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --accent: #ec4899;
             --success: #10b981;
-            --success-hover: #059669;
-            --danger: #ef4444;
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #1e293b;
+            --bg-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-main: #0f172a;
             --text-muted: #64748b;
-            --border-color: #e2e8f0;
+            --border: #e2e8f0;
         }
 
         body { 
-            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
-            background: var(--bg-color); 
+            font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background: #f1f5f9; 
             margin: 0; 
-            padding: 20px; 
+            padding: 15px; 
             color: var(--text-main); 
         }
 
+        .app-header {
+            background: var(--bg-gradient);
+            color: white;
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
+        }
+
+        .app-header h1 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .app-header p {
+            margin: 5px 0 0 0;
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Nav Tabs */
+        .nav-tabs {
+            display: flex;
+            background: #e2e8f0;
+            padding: 4px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            gap: 4px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-muted);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
         .container { 
-            max-width: 650px; 
-            margin: 0 auto 20px auto; 
             background: var(--card-bg); 
-            padding: 24px; 
+            padding: 20px; 
             border-radius: 16px; 
-            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.03); 
-            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05); 
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            margin-bottom: 20px;
         }
 
         h2 { 
             color: var(--primary); 
-            font-size: 20px; 
+            font-size: 18px; 
             margin-top: 0; 
-            margin-bottom: 20px; 
-            padding-bottom: 10px;
-            border-bottom: 2px solid #f1f5f9;
+            margin-bottom: 16px; 
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .form-group { 
-            margin-bottom: 16px; 
+            margin-bottom: 14px; 
         }
 
         label { 
             display: block; 
-            margin-bottom: 6px; 
-            font-weight: 600; 
-            font-size: 13px; 
+            margin-bottom: 5px; 
+            font-weight: 700; 
+            font-size: 12px; 
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         input, textarea { 
             width: 100%; 
-            padding: 12px 14px; 
-            border: 1.5px solid var(--border-color); 
-            border-radius: 8px; 
+            padding: 12px; 
+            border: 2px solid var(--border); 
+            border-radius: 10px; 
             box-sizing: border-box; 
             font-size: 14px; 
-            transition: all 0.2s ease;
-            background: #fff;
+            transition: all 0.2s;
+            background: #f8fafc;
         }
 
         input:focus, textarea:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
         }
 
         button { 
             width: 100%; 
-            background: var(--primary); 
+            background: var(--bg-gradient); 
             color: white; 
             border: none; 
             padding: 14px; 
             font-size: 15px; 
-            border-radius: 8px; 
+            border-radius: 10px; 
             cursor: pointer; 
-            font-weight: 600; 
-            transition: background 0.2s ease, transform 0.1s active;
-        }
-
-        button:hover { 
-            background: var(--primary-hover); 
+            font-weight: 700; 
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            transition: opacity 0.2s, transform 0.1s;
         }
 
         button:active {
-            transform: scale(0.99);
+            transform: scale(0.98);
         }
 
-        .btn-add { 
-            background: var(--success); 
-            margin-top: 12px; 
-        }
-        .btn-add:hover { 
-            background: var(--success-hover); 
-        }
-
-        .btn-danger { 
-            background: var(--danger); 
-            width: auto; 
-            padding: 6px 12px; 
-            font-size: 12px; 
-            border-radius: 6px;
-        }
-
-        .btn-print { 
-            background: #0ea5e9; 
-            margin-top: 20px; 
-            font-size: 16px; 
-        }
-        .btn-print:hover {
-            background: #0284c7;
-        }
+        .btn-add { background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); margin-top: 10px; }
+        .btn-danger { background: #ef4444; width: auto; padding: 6px 12px; font-size: 12px; border-radius: 6px; box-shadow: none; }
+        .btn-print { background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3); margin-top: 15px; }
 
         .success-msg { 
             color: var(--success); 
             text-align: center; 
-            margin-top: 12px; 
-            font-weight: 600; 
-            font-size: 14px;
+            margin-top: 10px; 
+            font-weight: 700; 
+            font-size: 13px;
         }
         
         .search-box { 
             display: flex; 
-            gap: 10px; 
+            gap: 8px; 
         }
-        .search-box input { 
-            flex: 1; 
-        }
-        .search-box button { 
-            width: auto; 
-            padding: 0 20px; 
-        }
+        .search-box input { flex: 1; }
+        .search-box button { width: auto; padding: 0 20px; }
         
         .result-card { 
-            margin-top: 18px; 
-            padding: 18px; 
-            border: 1.5px dashed var(--border-color); 
+            margin-top: 15px; 
+            padding: 15px; 
+            border: 2px dashed var(--border); 
             border-radius: 12px; 
-            background: #fafafa; 
+            background: #f8fafc; 
             display: none; 
             text-align: center; 
         }
@@ -158,163 +185,169 @@
             max-width: 100%; 
             height: auto; 
             border-radius: 8px; 
-            max-height: 200px; 
+            max-height: 180px; 
             object-fit: contain; 
-            margin-bottom: 12px; 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            margin-bottom: 10px; 
         }
-        .product-details { 
-            text-align: left; 
-            margin-bottom: 15px; 
-            line-height: 1.6; 
-            font-size: 14px;
-        }
+        .product-details { text-align: left; margin-bottom: 12px; font-size: 14px; line-height: 1.5; }
         
-        /* Quotation / Print Table */
         table { 
             width: 100%; 
-            border-collapse: separate; 
-            border-spacing: 0; 
-            margin-top: 15px; 
-            font-size: 14px; 
-            border-radius: 8px;
+            border-collapse: collapse; 
+            margin-top: 10px; 
+            font-size: 13px; 
+            border-radius: 10px;
             overflow: hidden;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border);
         }
-        th, td { 
-            padding: 12px 14px; 
-            text-align: left; 
-            border-bottom: 1px solid var(--border-color); 
-        }
-        th { 
-            background-color: #f1f5f9; 
-            color: var(--text-muted);
-            font-weight: 600;
-            font-size: 13px;
-            text-transform: uppercase;
-        }
-        tr:last-child td {
-            border-bottom: none;
-        }
-        .cart-img { 
-            width: 44px; 
-            height: 44px; 
-            object-fit: cover; 
-            border-radius: 6px; 
-            border: 1px solid var(--border-color);
-        }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background: #f1f5f9; color: var(--text-muted); font-size: 11px; text-transform: uppercase; }
+        .cart-img { width: 38px; height: 38px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border); }
         
-        .total-section {
+        .total-box {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 2px dashed var(--border-color);
-            font-size: 18px;
-            font-weight: bold;
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 800;
             color: var(--primary);
+            border: 1px solid var(--border);
         }
 
-        /* Print Layout Rules */
         @media print {
             body { background: white; padding: 0; }
             .no-print { display: none !important; }
-            .container { box-shadow: none; border: none; max-width: 100%; padding: 0; margin: 0; }
+            .container { box-shadow: none; border: none; margin: 0; padding: 0; }
             table { border: 1px solid #000; }
-            th, td { border: 1px solid #000; padding: 8px; }
-            th { background-color: #eee !important; color: #000; -webkit-print-color-adjust: exact; }
-            .btn-danger { display: none; }
+            th, td { border: 1px solid #000; }
+            th { background: #eee !important; color: #000; }
         }
     </style>
 </head>
 <body>
 
-<!-- Section 1: Product Entry Form -->
-<div class="container no-print">
-    <h2>📦 1. Product Entry Form</h2>
-    <form id="productForm">
-        <div class="form-group">
-            <label>Item Number (Unique ID)</label>
-            <input type="text" id="itemNumber" required placeholder="Jaise: ITM-001">
-        </div>
-        <div class="form-group">
-            <label>Product Photo (Image)</label>
-            <input type="file" id="productPhoto" accept="image/*" required>
-        </div>
-        <div class="form-group">
-            <label>Description / Name</label>
-            <textarea id="productDesc" rows="2" required placeholder="Product ki details yahan likhein"></textarea>
-        </div>
-        <div class="form-group">
-            <label>Size</label>
-            <input type="text" id="productSize" required placeholder="Jaise: Medium / 30x30">
-        </div>
-        <div class="form-group">
-            <label>Price (₹)</label>
-            <input type="number" id="productPrice" required placeholder="Price daaliye">
-        </div>
-        <button type="submit">Save Product</button>
-    </form>
-    <div id="msg" class="success-msg"></div>
+<div class="app-header no-print">
+    <h1>🚀 Business Pro Manager</h1>
+    <p>Inventory & Quotation System</p>
 </div>
 
-<!-- Section 2: Search Product -->
-<div class="container no-print">
-    <h2>🔍 2. Search Product</h2>
-    <div class="form-group search-box" style="margin-bottom:0;">
-        <input type="text" id="searchItemNo" placeholder="Item Number daaliye (jaise: ITM-001)">
-        <button type="button" onclick="searchProduct()">Search</button>
-    </div>
-    
-    <div id="searchResult" class="result-card">
-        <img id="resPhoto" src="" alt="Product Photo">
-        <div class="product-details">
-            <p><strong>Item Number:</strong> <span id="resItemNo"></span></p>
-            <p><strong>Description:</strong> <span id="resDesc"></span></p>
-            <p><strong>Size:</strong> <span id="resSize"></span></p>
-            <p><strong>Price:</strong> ₹<span id="resPrice"></span></p>
-        </div>
-        <button class="btn-add" onclick="addToQuotation()">+ Add to Selected List</button>
+<!-- Navigation Tabs -->
+<div class="nav-tabs no-print">
+    <button class="tab-btn active" onclick="switchTab('entry')">➕ Add Product</button>
+    <button class="tab-btn" onclick="switchTab('search')">🔍 Search & Add</button>
+    <button class="tab-btn" onclick="switchTab('quotation')">📄 Quotation</button>
+</div>
+
+<!-- Tab 1: Product Entry -->
+<div id="tab-entry" class="tab-content active no-print">
+    <div class="container">
+        <h2>📦 New Product Entry</h2>
+        <form id="productForm">
+            <div class="form-group">
+                <label>Item Number (Unique ID)</label>
+                <input type="text" id="itemNumber" required placeholder="Jaise: ITM-001">
+            </div>
+            <div class="form-group">
+                <label>Product Photo</label>
+                <input type="file" id="productPhoto" accept="image/*" required>
+            </div>
+            <div class="form-group">
+                <label>Description / Name</label>
+                <textarea id="productDesc" rows="2" required placeholder="Product details..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Size</label>
+                <input type="text" id="productSize" required placeholder="Jaise: Medium / 30x30">
+            </div>
+            <div class="form-group">
+                <label>Price (₹)</label>
+                <input type="number" id="productPrice" required placeholder="0.00">
+            </div>
+            <button type="submit">Save Product</button>
+        </form>
+        <div id="msg" class="success-msg"></div>
     </div>
 </div>
 
-<!-- Section 3: Selected Products / Quotation Sheet -->
-<div class="container" id="printArea">
-    <h2>📄 Selected Products & Quotation</h2>
-    <table id="cartTable">
-        <thead>
-            <tr>
-                <th>Photo</th>
-                <th>Item No</th>
-                <th>Desc</th>
-                <th>Size</th>
-                <th>Price</th>
-                <th class="no-print">Action</th>
-            </tr>
-        </thead>
-        <tbody id="cartBody">
-            <tr>
-                <td colspan="6" style="text-align:center; color:var(--text-muted); padding: 20px;">Koi product select nahi kiya gaya hai.</td>
-            </tr>
-        </tbody>
-    </table>
-    
-    <div class="total-section">
-        <span>Total Amount:</span>
-        <span>₹<span id="totalPrice">0</span></span>
+<!-- Tab 2: Search -->
+<div id="tab-search" class="tab-content no-print">
+    <div class="container">
+        <h2>🔍 Search Inventory</h2>
+        <div class="form-group search-box" style="margin-bottom:0;">
+            <input type="text" id="searchItemNo" placeholder="Enter Item Number...">
+            <button type="button" onclick="searchProduct()">Find</button>
+        </div>
+        
+        <div id="searchResult" class="result-card">
+            <img id="resPhoto" src="" alt="Photo">
+            <div class="product-details">
+                <p><strong>Item No:</strong> <span id="resItemNo"></span></p>
+                <p><strong>Desc:</strong> <span id="resDesc"></span></p>
+                <p><strong>Size:</strong> <span id="resSize"></span></p>
+                <p><strong>Price:</strong> ₹<span id="resPrice"></span></p>
+            </div>
+            <button class="btn-add" onclick="addToQuotation()">+ Add to Quotation</button>
+        </div>
     </div>
+</div>
 
-    <button class="btn-print no-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
+<!-- Tab 3: Quotation Sheet -->
+<div id="tab-quotation" class="tab-content active-print">
+    <div class="container" id="printArea">
+        <h2>📄 Quotation Summary</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Photo</th>
+                    <th>Item</th>
+                    <th>Desc</th>
+                    <th>Size</th>
+                    <th>Price</th>
+                    <th class="no-print">Action</th>
+                </tr>
+            </thead>
+            <tbody id="cartBody">
+                <tr>
+                    <td colspan="6" style="text-align:center; color:var(--text-muted); padding: 25px;">No products added yet.</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="total-box">
+            <span>Total Amount:</span>
+            <span>₹<span id="totalPrice">0</span></span>
+        </div>
+
+        <button class="btn-print no-print" onclick="window.print()">🖨️ Print / Save PDF</button>
+    </div>
 </div>
 
 <script>
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        
+        if(tabName === 'entry') {
+            document.getElementById('tab-entry').classList.add('active');
+            event.currentTarget.classList.add('active');
+        } else if(tabName === 'search') {
+            document.getElementById('tab-search').classList.add('active');
+            event.currentTarget.classList.add('active');
+        } else if(tabName === 'quotation') {
+            document.getElementById('tab-quotation').classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+    }
+
     let currentSearchedProduct = null;
     let quotationCart = [];
 
     document.getElementById('productForm').addEventListener('submit', function(e) {
         e.preventDefault();
-
         const itemNumber = document.getElementById('itemNumber').value.trim();
         const photoInput = document.getElementById('productPhoto');
         const productDesc = document.getElementById('productDesc').value;
@@ -328,46 +361,24 @@
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
-                    
-                    let width = img.width;
-                    let height = img.height;
+                    let width = img.width, height = img.height;
                     const max_size = 500;
-                    if (width > height) {
-                        if (width > max_size) { height *= max_size / width; width = max_size; }
-                    } else {
-                        if (height > max_size) { width *= max_size / height; height = max_size; }
-                    }
-                    canvas.width = width;
-                    canvas.height = height;
+                    if (width > height) { if (width > max_size) { height *= max_size / width; width = max_size; } }
+                    else { if (height > max_size) { width *= max_size / height; height = max_size; } }
+                    canvas.width = width; canvas.height = height;
                     ctx.drawImage(img, 0, 0, width, height);
-
                     const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
 
-                    const productData = {
-                        itemNumber: itemNumber,
-                        photo: compressedBase64,
-                        description: productDesc,
-                        size: productSize,
-                        price: productPrice
-                    };
-
+                    const productData = { itemNumber, photo: compressedBase64, description: productDesc, size: productSize, price: productPrice };
                     let products = JSON.parse(localStorage.getItem('businessProducts')) || [];
                     let existingIndex = products.findIndex(p => p.itemNumber.toLowerCase() === itemNumber.toLowerCase());
                     
-                    if(existingIndex > -1) {
-                        products[existingIndex] = productData;
-                    } else {
-                        products.push(productData);
-                    }
+                    if(existingIndex > -1) products[existingIndex] = productData;
+                    else products.push(productData);
 
-                    try {
-                        localStorage.setItem('businessProducts', JSON.stringify(products));
-                        document.getElementById('msg').innerText = "✨ Product Successfully Save Ho Gaya!";
-                        document.getElementById('productForm').reset();
-                    } catch (err) {
-                        alert("Storage full ho gayi hai!");
-                    }
-
+                    localStorage.setItem('businessProducts', JSON.stringify(products));
+                    document.getElementById('msg').innerText = "✨ Saved Successfully!";
+                    document.getElementById('productForm').reset();
                     setTimeout(() => { document.getElementById('msg').innerText = ""; }, 3000);
                 };
                 img.src = event.target.result;
@@ -379,11 +390,7 @@
     function searchProduct() {
         const query = document.getElementById('searchItemNo').value.trim();
         const resultDiv = document.getElementById('searchResult');
-
-        if(!query) {
-            alert("Kripya Item Number daaliye!");
-            return;
-        }
+        if(!query) { alert("Enter Item Number!"); return; }
 
         let products = JSON.parse(localStorage.getItem('businessProducts')) || [];
         const found = products.find(p => p.itemNumber.toLowerCase() === query.toLowerCase());
@@ -399,7 +406,7 @@
         } else {
             resultDiv.style.display = "none";
             currentSearchedProduct = null;
-            alert("Yeh Item Number nahi mila!");
+            alert("Item not found!");
         }
     }
 
@@ -407,15 +414,14 @@
         if(!currentSearchedProduct) return;
         quotationCart.push(currentSearchedProduct);
         renderCart();
-        alert("✔️ Product quotation list mein add ho gaya!");
+        alert("✔️ Added to Quotation!");
     }
 
     function renderCart() {
         const tbody = document.getElementById('cartBody');
         tbody.innerHTML = "";
-
         if(quotationCart.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding: 20px;">Koi product select nahi kiya gaya hai.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding: 25px;">No products added yet.</td></tr>`;
             document.getElementById('totalPrice').innerText = "0";
             return;
         }
@@ -430,11 +436,10 @@
                 <td>${item.description}</td>
                 <td>${item.size}</td>
                 <td>₹${item.price}</td>
-                <td class="no-print"><button class="btn-danger" onclick="removeFromCart(${index})">Remove</button></td>
+                <td class="no-print"><button class="btn-danger" onclick="removeFromCart(${index})">X</button></td>
             `;
             tbody.appendChild(tr);
         });
-
         document.getElementById('totalPrice').innerText = total;
     }
 
