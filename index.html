@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AMASS HANDICRAFTS - Quotation Manager</title>
+    <title>AMASS HANDICRAFTS - Cloud Quotation System</title>
     <style>
         :root {
             --primary: #818cf8;
@@ -49,7 +49,6 @@
             opacity: 0.9;
         }
 
-        /* Nav Tabs */
         .nav-tabs {
             display: flex;
             background: #131c31;
@@ -80,13 +79,8 @@
             font-weight: 700;
         }
 
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
         .container { 
             background: var(--card-bg); 
@@ -107,10 +101,7 @@
             gap: 8px;
         }
 
-        .form-group { 
-            margin-bottom: 14px; 
-        }
-
+        .form-group { margin-bottom: 14px; }
         label { 
             display: block; 
             margin-bottom: 5px; 
@@ -153,33 +144,19 @@
             transition: opacity 0.2s, transform 0.1s;
         }
 
-        button:active {
-            transform: scale(0.98);
-        }
+        button:active { transform: scale(0.98); }
 
         .btn-add { background: linear-gradient(135deg, #059669 0%, #34d399 100%); color: #0b0f19; box-shadow: 0 4px 15px rgba(52, 211, 153, 0.2); margin-top: 10px; }
         .btn-danger { background: #ef4444; color: white; width: auto; padding: 5px 10px; font-size: 11px; border-radius: 6px; box-shadow: none; }
         
-        .action-btn-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        .btn-print { background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%); color: #0b0f19; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.2); flex: 1; margin-top: 0; }
-        .btn-excel { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2); flex: 1; margin-top: 0; }
+        .action-btn-group { display: flex; gap: 10px; margin-top: 15px; }
+        .btn-print { background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%); color: #0b0f19; flex: 1; margin-top: 0; }
+        .btn-excel { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; flex: 1; margin-top: 0; }
 
-        .success-msg { 
-            color: var(--success); 
-            text-align: center; 
-            margin-top: 10px; 
-            font-weight: 700; 
-            font-size: 13px;
-        }
+        .success-msg { color: var(--success); text-align: center; margin-top: 10px; font-weight: 700; font-size: 13px; }
+        .loading-msg { color: var(--primary); text-align: center; margin-top: 10px; font-weight: 700; font-size: 13px; }
         
-        .search-box { 
-            display: flex; 
-            gap: 8px; 
-        }
+        .search-box { display: flex; gap: 8px; }
         .search-box input { flex: 1; }
         .search-box button { width: auto; padding: 0 20px; }
         
@@ -192,38 +169,31 @@
             display: none; 
             text-align: center; 
         }
-        .result-card img { 
-            max-width: 100%; 
-            height: auto; 
-            border-radius: 8px; 
-            max-height: 180px; 
-            object-fit: contain; 
-            margin-bottom: 10px; 
-        }
+        .result-card img { max-width: 100%; height: auto; border-radius: 8px; max-height: 180px; object-fit: contain; margin-bottom: 10px; }
         .product-details { text-align: left; margin-bottom: 12px; font-size: 14px; line-height: 1.5; color: var(--text-muted); }
         .product-details strong { color: var(--text-main); }
         
-        /* Brand Header for PDF/Quotation */
+        .search-qty-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            background: #131c31;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .search-qty-box input { width: 70px; padding: 6px; text-align: center; }
+
         .brand-header {
             text-align: center;
             border-bottom: 2px solid var(--primary);
             padding-bottom: 15px;
             margin-bottom: 20px;
         }
-        .brand-header h1 {
-            margin: 0;
-            font-size: 24px;
-            font-weight: 900;
-            color: var(--primary);
-            letter-spacing: 1px;
-        }
-        .brand-header p {
-            margin: 4px 0 0 0;
-            font-size: 12px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
+        .brand-header h1 { margin: 0; font-size: 24px; font-weight: 900; color: var(--primary); letter-spacing: 1px; }
+        .brand-header p { margin: 4px 0 0 0; font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; }
 
         table { 
             width: 100%; 
@@ -238,16 +208,7 @@
         th { background: #1a243f; color: var(--text-muted); font-size: 10px; text-transform: uppercase; }
         .cart-img { width: 34px; height: 34px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border); }
         
-        .qty-input {
-            width: 45px;
-            padding: 4px;
-            text-align: center;
-            font-size: 12px;
-            background: #0b0f19;
-            color: white;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-        }
+        .qty-input { width: 45px; padding: 4px; text-align: center; font-size: 12px; background: #0b0f19; color: white; border: 1px solid var(--border); border-radius: 4px; }
 
         .total-box {
             display: flex;
@@ -280,11 +241,10 @@
 <body>
 
 <div class="app-header no-print">
-    <h1>🚀 Business Pro Manager</h1>
-    <p>Dark Mode Inventory & Quotation System</p>
+    <h1>🚀 AMASS HANDICRAFTS</h1>
+    <p>Cloud Synchronized Business Manager</p>
 </div>
 
-<!-- Navigation Tabs -->
 <div class="nav-tabs no-print">
     <button class="tab-btn active" onclick="switchTab('entry', event)">➕ Add Product</button>
     <button class="tab-btn" onclick="switchTab('search', event)">🔍 Search & Add</button>
@@ -294,7 +254,7 @@
 <!-- Tab 1: Product Entry -->
 <div id="tab-entry" class="tab-content active no-print">
     <div class="container">
-        <h2>📦 New Product Entry</h2>
+        <h2>📦 New Product Entry (Cloud Save)</h2>
         <form id="productForm">
             <div class="form-group">
                 <label>Item Number (Unique ID)</label>
@@ -316,7 +276,7 @@
                 <label>Price (Per Piece ₹)</label>
                 <input type="number" id="productPrice" required placeholder="0.00">
             </div>
-            <button type="submit">Save Product</button>
+            <button type="submit" id="saveBtn">☁️ Save Product to Cloud</button>
         </form>
         <div id="msg" class="success-msg"></div>
     </div>
@@ -325,11 +285,12 @@
 <!-- Tab 2: Search -->
 <div id="tab-search" class="tab-content no-print">
     <div class="container">
-        <h2>🔍 Search Inventory</h2>
+        <h2>🔍 Search Cloud Inventory</h2>
         <div class="form-group search-box" style="margin-bottom:0;">
             <input type="text" id="searchItemNo" placeholder="Enter Item Number...">
             <button type="button" onclick="searchProduct()">Find</button>
         </div>
+        <div id="searchLoading" class="loading-msg" style="display:none;">☁️ Fetching live data from Cloud...</div>
         
         <div id="searchResult" class="result-card">
             <img id="resPhoto" src="" alt="Photo">
@@ -339,6 +300,10 @@
                 <p><strong>Size:</strong> <span id="resSize"></span></p>
                 <p><strong>Price:</strong> ₹<span id="resPrice"></span></p>
             </div>
+            <div class="search-qty-box">
+                <label style="margin:0;">Select Quantity:</label>
+                <input type="number" id="addQty" value="1" min="1">
+            </div>
             <button class="btn-add" onclick="addToQuotation()">+ Add to Quotation</button>
         </div>
     </div>
@@ -347,7 +312,6 @@
 <!-- Tab 3: Quotation Sheet -->
 <div id="tab-quotation" class="tab-content active-print">
     <div class="container" id="printArea">
-        <!-- Brand Header for PDF/Print -->
         <div class="brand-header">
             <h1>AMASS HANDICRAFTS</h1>
             <p>Official Quotation & Invoice Summary</p>
@@ -368,7 +332,7 @@
             </thead>
             <tbody id="cartBody">
                 <tr>
-                    <td colspan="8" style="text-align:center; color:var(--text-muted); padding: 25px;">No products added yet.</td>
+                    <td colspan="8" style="text-align:center; color:var(--text-muted); padding: 25px;">No products added yet. Click 'Search & Add' tab to select products.</td>
                 </tr>
             </tbody>
         </table>
@@ -386,6 +350,9 @@
 </div>
 
 <script>
+    // Configured Google Apps Script Web App URL
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzGFDoSa39wpPPcoER77J0NGWhlWmCm_niqTg8UsCcG3skKK_eoIqNxDzCSq4kuEhh9/exec";
+
     function switchTab(tabName, event) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
@@ -405,6 +372,9 @@
 
     document.getElementById('productForm').addEventListener('submit', function(e) {
         e.preventDefault();
+        const saveBtn = document.getElementById('saveBtn');
+        const msgDiv = document.getElementById('msg');
+        
         const itemNumber = document.getElementById('itemNumber').value.trim();
         const photoInput = document.getElementById('productPhoto');
         const productDesc = document.getElementById('productDesc').value;
@@ -412,6 +382,10 @@
         const productPrice = document.getElementById('productPrice').value;
 
         if (photoInput.files && photoInput.files[0]) {
+            saveBtn.disabled = true;
+            saveBtn.innerText = "☁️ Uploading to Cloud...";
+            msgDiv.innerText = "Processing image...";
+
             const reader = new FileReader();
             reader.onload = function(event) {
                 const img = new Image();
@@ -419,24 +393,39 @@
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
                     let width = img.width, height = img.height;
-                    const max_size = 500;
+                    const max_size = 400;
                     if (width > height) { if (width > max_size) { height *= max_size / width; width = max_size; } }
                     else { if (height > max_size) { width *= max_size / height; height = max_size; } }
                     canvas.width = width; canvas.height = height;
                     ctx.drawImage(img, 0, 0, width, height);
-                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
 
-                    const productData = { itemNumber, photo: compressedBase64, description: productDesc, size: productSize, price: productPrice };
-                    let products = JSON.parse(localStorage.getItem('businessProducts')) || [];
-                    let existingIndex = products.findIndex(p => p.itemNumber.toLowerCase() === itemNumber.toLowerCase());
-                    
-                    if(existingIndex > -1) products[existingIndex] = productData;
-                    else products.push(productData);
+                    const payload = {
+                        itemNumber: itemNumber,
+                        photo: compressedBase64,
+                        description: productDesc,
+                        size: productSize,
+                        price: productPrice
+                    };
 
-                    localStorage.setItem('businessProducts', JSON.stringify(products));
-                    document.getElementById('msg').innerText = "✨ Product Successfully Saved!";
-                    document.getElementById('productForm').reset();
-                    setTimeout(() => { document.getElementById('msg').innerText = ""; }, 3000);
+                    fetch(SCRIPT_URL, {
+                        method: "POST",
+                        mode: "no-cors",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload)
+                    })
+                    .then(() => {
+                        msgDiv.innerText = "✨ Successfully Saved to Cloud!";
+                        document.getElementById('productForm').reset();
+                        saveBtn.disabled = false;
+                        saveBtn.innerText = "☁️ Save Product to Cloud";
+                        setTimeout(() => { msgDiv.innerText = ""; }, 4000);
+                    })
+                    .catch(err => {
+                        alert("Error saving to Cloud: " + err);
+                        saveBtn.disabled = false;
+                        saveBtn.innerText = "☁️ Save Product to Cloud";
+                    });
                 };
                 img.src = event.target.result;
             };
@@ -444,36 +433,51 @@
         }
     });
 
-    function searchProduct() {
+    async function searchProduct() {
         const query = document.getElementById('searchItemNo').value.trim();
         const resultDiv = document.getElementById('searchResult');
+        const loadingDiv = document.getElementById('searchLoading');
+        
         if(!query) { alert("Please enter an Item Number!"); return; }
 
-        let products = JSON.parse(localStorage.getItem('businessProducts')) || [];
-        const found = products.find(p => p.itemNumber.toLowerCase() === query.toLowerCase());
+        resultDiv.style.display = "none";
+        loadingDiv.style.display = "block";
 
-        if(found) {
-            currentSearchedProduct = found;
-            resultDiv.style.display = "block";
-            document.getElementById('resPhoto').src = found.photo;
-            document.getElementById('resItemNo').innerText = found.itemNumber;
-            document.getElementById('resDesc').innerText = found.description;
-            document.getElementById('resSize').innerText = found.size;
-            document.getElementById('resPrice').innerText = found.price;
-        } else {
-            resultDiv.style.display = "none";
-            currentSearchedProduct = null;
-            alert("Item Number not found!");
+        try {
+            const response = await fetch(SCRIPT_URL);
+            const products = await response.json();
+            loadingDiv.style.display = "none";
+
+            const found = products.find(p => String(p.itemNumber).toLowerCase() === query.toLowerCase());
+
+            if(found) {
+                currentSearchedProduct = found;
+                resultDiv.style.display = "block";
+                document.getElementById('resPhoto').src = found.photo;
+                document.getElementById('resItemNo').innerText = found.itemNumber;
+                document.getElementById('resDesc').innerText = found.description;
+                document.getElementById('resSize').innerText = found.size;
+                document.getElementById('resPrice').innerText = found.price;
+                document.getElementById('addQty').value = 1;
+            } else {
+                currentSearchedProduct = null;
+                alert("Item Number not found in Cloud Database!");
+            }
+        } catch(err) {
+            loadingDiv.style.display = "none";
+            alert("Cloud fetch error. Check your Internet or Script URL.");
         }
     }
 
     function addToQuotation() {
         if(!currentSearchedProduct) return;
-        let existing = quotationCart.find(item => item.itemNumber.toLowerCase() === currentSearchedProduct.itemNumber.toLowerCase());
+        let qtyVal = parseInt(document.getElementById('addQty').value) || 1;
+        
+        let existing = quotationCart.find(item => String(item.itemNumber).toLowerCase() === String(currentSearchedProduct.itemNumber).toLowerCase());
         if(existing) {
-            existing.qty += 1;
+            existing.qty += qtyVal;
         } else {
-            let cartItem = { ...currentSearchedProduct, qty: 1 };
+            let cartItem = { ...currentSearchedProduct, qty: qtyVal };
             quotationCart.push(cartItem);
         }
         renderCart();
@@ -491,7 +495,7 @@
         const tbody = document.getElementById('cartBody');
         tbody.innerHTML = "";
         if(quotationCart.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding: 25px;">No products added yet.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding: 25px;">No products added yet. Click 'Search & Add' tab to select products.</td></tr>`;
             document.getElementById('totalPrice').innerText = "0";
             return;
         }
@@ -528,45 +532,28 @@
             return;
         }
 
-        let html = `
-            <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
-            <head><meta charset="utf-8"></head>
-            <body>
-            <table>
-                <tr><th colspan="6" style="font-size:16px; color:#4f46e5; text-align:center;">AMASS HANDICRAFTS - QUOTATION</th></tr>
-                <tr>
-                    <th>Item Number</th>
-                    <th>Description</th>
-                    <th>Size</th>
-                    <th>Price (INR)</th>
-                    <th>Quantity</th>
-                    <th>Total (INR)</th>
-                </tr>
-        `;
+        let csv = "\uFEFF";
+        csv += "AMASS HANDICRAFTS - QUOTATION REPORT\n\n";
+        csv += "Item Number,Description,Size,Price (INR),Quantity,Total Amount (INR)\n";
 
+        let grandTotal = 0;
         quotationCart.forEach(item => {
-            html += `
-                <tr>
-                    <td>${item.itemNumber}</td>
-                    <td>${item.description}</td>
-                    <td>${item.size}</td>
-                    <td>${item.price}</td>
-                    <td>${item.qty}</td>
-                    <td>${item.price * item.qty}</td>
-                </tr>
-            `;
+            let cleanDesc = item.description.replace(/"/g, '""').replace(/(\r\n|\n|\r)/gm, " ");
+            let itemTotal = item.price * item.qty;
+            grandTotal += itemTotal;
+            csv += `"${item.itemNumber}","${cleanDesc}","${item.size}",${item.price},${item.qty},${itemTotal}\n`;
         });
 
-        html += `</table></body></html>`;
+        csv += `\n,,,,Grand Total,${grandTotal}\n`;
 
-        const blob = new Blob([html], { type: 'application/vnd.ms-excel' });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = "Amass_Handicrafts_Quotation.xls";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", `Amass_Quotation_${new Date().toISOString().slice(0,10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 </script>
 
