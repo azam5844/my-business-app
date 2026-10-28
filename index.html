@@ -462,7 +462,7 @@
             document.getElementById('resPrice').innerText = found.price;
         } else {
             resultDiv.style.display = "none";
-            currentSearchedPort = null;
+            currentSearchedProduct = null;
             alert("Item Number not found!");
         }
     }
@@ -528,18 +528,42 @@
             return;
         }
 
-        let csv = "Item Number,Description,Size,Price (INR),Quantity,Total (INR)\n";
+        let html = `
+            <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+            <head><meta charset="utf-8"></head>
+            <body>
+            <table>
+                <tr><th colspan="6" style="font-size:16px; color:#4f46e5; text-align:center;">AMASS HANDICRAFTS - QUOTATION</th></tr>
+                <tr>
+                    <th>Item Number</th>
+                    <th>Description</th>
+                    <th>Size</th>
+                    <th>Price (INR)</th>
+                    <th>Quantity</th>
+                    <th>Total (INR)</th>
+                </tr>
+        `;
+
         quotationCart.forEach(item => {
-            let desc = item.description.replace(/(\r\n|\n|\r)/gm, " "); // clean newlines
-            let row = `"${item.itemNumber}","${desc}","${item.size}",${item.price},${item.qty},${item.price * item.qty}`;
-            csv += row + "\n";
+            html += `
+                <tr>
+                    <td>${item.itemNumber}</td>
+                    <td>${item.description}</td>
+                    <td>${item.size}</td>
+                    <td>${item.price}</td>
+                    <td>${item.qty}</td>
+                    <td>${item.price * item.qty}</td>
+                </tr>
+            `;
         });
 
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        html += `</table></body></html>`;
+
+        const blob = new Blob([html], { type: 'application/vnd.ms-excel' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = "Amass_Handicrafts_Quotation.csv";
+        a.download = "Amass_Handicrafts_Quotation.xls";
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
