@@ -36,18 +36,8 @@
             box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.3);
         }
 
-        .app-header h1 {
-            margin: 0;
-            font-size: 22px;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-        }
-
-        .app-header p {
-            margin: 5px 0 0 0;
-            font-size: 13px;
-            opacity: 0.9;
-        }
+        .app-header h1 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: 0.5px; }
+        .app-header p { margin: 5px 0 0 0; font-size: 13px; opacity: 0.9; }
 
         .nav-tabs {
             display: flex;
@@ -91,26 +81,10 @@
             margin-bottom: 20px;
         }
 
-        h2 { 
-            color: var(--primary); 
-            font-size: 18px; 
-            margin-top: 0; 
-            margin-bottom: 16px; 
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        h2 { color: var(--primary); font-size: 18px; margin-top: 0; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
 
         .form-group { margin-bottom: 14px; }
-        label { 
-            display: block; 
-            margin-bottom: 5px; 
-            font-weight: 700; 
-            font-size: 12px; 
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+        label { display: block; margin-bottom: 5px; font-weight: 700; font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
 
         input, textarea { 
             width: 100%; 
@@ -119,16 +93,11 @@
             border-radius: 10px; 
             box-sizing: border-box; 
             font-size: 14px; 
-            transition: all 0.2s;
             background: #0b0f19;
             color: var(--text-main);
         }
 
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.15);
-        }
+        input:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.15); }
 
         button { 
             width: 100%; 
@@ -141,12 +110,11 @@
             cursor: pointer; 
             font-weight: 700; 
             box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-            transition: opacity 0.2s, transform 0.1s;
         }
 
         button:active { transform: scale(0.98); }
 
-        .btn-add { background: linear-gradient(135deg, #059669 0%, #34d399 100%); color: #0b0f19; box-shadow: 0 4px 15px rgba(52, 211, 153, 0.2); margin-top: 10px; }
+        .btn-add { background: linear-gradient(135deg, #059669 0%, #34d399 100%); color: #0b0f19; margin-top: 10px; }
         .btn-danger { background: #ef4444; color: white; width: auto; padding: 5px 10px; font-size: 11px; border-radius: 6px; box-shadow: none; }
         
         .action-btn-group { display: flex; gap: 10px; margin-top: 15px; }
@@ -183,7 +151,6 @@
             border-radius: 8px;
             border: 1px solid var(--border);
         }
-
         .search-qty-box input { width: 70px; padding: 6px; text-align: center; }
 
         .brand-header {
@@ -195,19 +162,10 @@
         .brand-header h1 { margin: 0; font-size: 24px; font-weight: 900; color: var(--primary); letter-spacing: 1px; }
         .brand-header p { margin: 4px 0 0 0; font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; }
 
-        table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            margin-top: 10px; 
-            font-size: 12px; 
-            border-radius: 10px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-        }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
         th, td { padding: 8px; text-align: left; border-bottom: 1px solid var(--border); }
         th { background: #1a243f; color: var(--text-muted); font-size: 10px; text-transform: uppercase; }
         .cart-img { width: 34px; height: 34px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border); }
-        
         .qty-input { width: 45px; padding: 4px; text-align: center; font-size: 12px; background: #0b0f19; color: white; border: 1px solid var(--border); border-radius: 4px; }
 
         .total-box {
@@ -350,7 +308,6 @@
 </div>
 
 <script>
-    // Configured Google Apps Script Web App URL
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzGFDoSa39wpPPcoER77J0NGWhlWmCm_niqTg8UsCcG3skKK_eoIqNxDzCSq4kuEhh9/exec";
 
     function switchTab(tabName, event) {
@@ -408,6 +365,13 @@
                         price: productPrice
                     };
 
+                    // Save locally first for instant backup
+                    let localProducts = JSON.parse(localStorage.getItem('businessProducts')) || [];
+                    let idx = localProducts.findIndex(p => String(p.itemNumber).toLowerCase() === itemNumber.toLowerCase());
+                    if(idx > -1) localProducts[idx] = payload; else localProducts.push(payload);
+                    localStorage.setItem('businessProducts', JSON.stringify(localProducts));
+
+                    // Send to Cloud Google Sheet
                     fetch(SCRIPT_URL, {
                         method: "POST",
                         mode: "no-cors",
@@ -415,14 +379,14 @@
                         body: JSON.stringify(payload)
                     })
                     .then(() => {
-                        msgDiv.innerText = "✨ Successfully Saved to Cloud!";
+                        msgDiv.innerText = "✨ Successfully Saved to Cloud & Local Storage!";
                         document.getElementById('productForm').reset();
                         saveBtn.disabled = false;
                         saveBtn.innerText = "☁️ Save Product to Cloud";
                         setTimeout(() => { msgDiv.innerText = ""; }, 4000);
                     })
                     .catch(err => {
-                        alert("Error saving to Cloud: " + err);
+                        msgDiv.innerText = "⚠️ Saved locally, cloud sync pending: " + err;
                         saveBtn.disabled = false;
                         saveBtn.innerText = "☁️ Save Product to Cloud";
                     });
@@ -443,29 +407,41 @@
         resultDiv.style.display = "none";
         loadingDiv.style.display = "block";
 
+        let products = [];
+
+        // 1. Try fetching from Cloud Google Sheet
         try {
             const response = await fetch(SCRIPT_URL);
-            const products = await response.json();
-            loadingDiv.style.display = "none";
-
-            const found = products.find(p => String(p.itemNumber).toLowerCase() === query.toLowerCase());
-
-            if(found) {
-                currentSearchedProduct = found;
-                resultDiv.style.display = "block";
-                document.getElementById('resPhoto').src = found.photo;
-                document.getElementById('resItemNo').innerText = found.itemNumber;
-                document.getElementById('resDesc').innerText = found.description;
-                document.getElementById('resSize').innerText = found.size;
-                document.getElementById('resPrice').innerText = found.price;
-                document.getElementById('addQty').value = 1;
-            } else {
-                currentSearchedProduct = null;
-                alert("Item Number not found in Cloud Database!");
+            products = await response.json();
+            if(products && products.length > 0) {
+                // Update local storage cache
+                localStorage.setItem('businessProducts', JSON.stringify(products));
             }
         } catch(err) {
-            loadingDiv.style.display = "none";
-            alert("Cloud fetch error. Check your Internet or Script URL.");
+            console.log("Cloud fetch failed, falling back to local storage");
+        }
+
+        // 2. Fallback to Local Storage if cloud returned empty
+        if(!products || products.length === 0) {
+            products = JSON.parse(localStorage.getItem('businessProducts')) || [];
+        }
+
+        loadingDiv.style.display = "none";
+
+        const found = products.find(p => String(p.itemNumber).toLowerCase() === query.toLowerCase());
+
+        if(found) {
+            currentSearchedProduct = found;
+            resultDiv.style.display = "block";
+            document.getElementById('resPhoto').src = found.photo;
+            document.getElementById('resItemNo').innerText = found.itemNumber;
+            document.getElementById('resDesc').innerText = found.description;
+            document.getElementById('resSize').innerText = found.size;
+            document.getElementById('resPrice').innerText = found.price;
+            document.getElementById('addQty').value = 1;
+        } else {
+            currentSearchedProduct = null;
+            alert("Item Number not found in Cloud or Local Database!");
         }
     }
 
