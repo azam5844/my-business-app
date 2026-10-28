@@ -248,7 +248,7 @@
             <input type="text" id="searchItemNo" placeholder="Enter Item Number...">
             <button type="button" onclick="searchProduct()">Find</button>
         </div>
-        <div id="searchLoading" class="loading-msg" style="display:none;">☁️ Fetching live data from Cloud Sheet...</div>
+        <div id="searchLoading" class="loading-msg" style="display:none;">☁️ Fetching live data from Cloud...</div>
         
         <div id="searchResult" class="result-card">
             <img id="resPhoto" src="" alt="Photo">
@@ -365,7 +365,13 @@
                         price: productPrice
                     };
 
-                    // Send to Cloud Google Sheet directly via POST
+                    // Save locally for instant backup
+                    let localProducts = JSON.parse(localStorage.getItem('businessProducts')) || [];
+                    let idx = localProducts.findIndex(p => String(p.itemNumber).toLowerCase() === itemNumber.toLowerCase());
+                    if(idx > -1) localProducts[idx] = payload; else localProducts.push(payload);
+                    localStorage.setItem('businessProducts', JSON.stringify(localProducts));
+
+                    // Send to Cloud Google Sheet
                     fetch(SCRIPT_URL, {
                         method: "POST",
                         mode: "no-cors",
@@ -373,14 +379,14 @@
                         body: JSON.stringify(payload)
                     })
                     .then(() => {
-                        msgDiv.innerText = "✨ Successfully Saved directly to Cloud Sheet!";
+                        msgDiv.innerText = "✨ Successfully Saved to Cloud & Local Storage!";
                         document.getElementById('productForm').reset();
                         saveBtn.disabled = false;
                         saveBtn.innerText = "☁️ Save Product to Cloud";
                         setTimeout(() => { msgDiv.innerText = ""; }, 4000);
                     })
                     .catch(err => {
-                        msgDiv.innerText = "⚠️ Cloud save error: " + err;
+                        msgDiv.innerText = "⚠️ Saved locally, cloud sync pending: " + err;
                         saveBtn.disabled = false;
                         saveBtn.innerText = "☁️ Save Product to Cloud";
                     });
@@ -391,22 +397,22 @@
         }
     });
 
-    // Fetch live products directly from Google Sheet via JSONP
+    // Fetch products using JSONP to bypass CORS
     function fetchCloudProducts() {
         return new Promise((resolve, reject) => {
             const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
             window[callbackName] = function(data) {
                 delete window[callbackName];
-                if(script.parentNode) document.body.removeChild(script);
+                document.body.removeChild(script);
                 resolve(data);
             };
 
             const script = document.createElement('script');
-            script.src = `${SCRIPT_URL}?callback=${callbackName}&t=` + new Date().getTime();
+            script.src = `${SCRIPT_URL}?callback=${callbackName}`;
             script.onerror = function() {
                 delete window[callbackName];
-                if(script.parentNode) document.body.removeChild(script);
-                reject('Cloud connection failed');
+                document.body.removeChild(script);
+                reject('Network error');
             };
             document.body.appendChild(script);
         });
@@ -426,16 +432,18 @@
 
         try {
             products = await fetchCloudProducts();
+            if(products && products.length > 0) {
+                localStorage.setItem('businessProducts', JSON.stringify(products));
+            }
         } catch(err) {
-            console.log("Could not fetch from cloud");
+            console.log("Cloud fetch failed via JSONP, using local storage");
+        }
+
+        if(!products || products.length === 0) {
+            products = JSON.parse(localStorage.getItem('businessProducts')) || [];
         }
 
         loadingDiv.style.display = "none";
-
-        if(!products || products.length === 0) {
-            alert("No products found in Cloud Google Sheet or Sheet is empty!");
-            return;
-        }
 
         const found = products.find(p => String(p.itemNumber).trim().toLowerCase() === query.toLowerCase());
 
@@ -450,7 +458,7 @@
             document.getElementById('addQty').value = 1;
         } else {
             currentSearchedProduct = null;
-            alert("Item Number not found in Cloud Database!");
+            alert("Item Number not found in Cloud or Local Database!");
         }
     }
 
