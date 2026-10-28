@@ -158,7 +158,7 @@
         }
 
         .btn-add { background: linear-gradient(135deg, #059669 0%, #34d399 100%); color: #0b0f19; box-shadow: 0 4px 15px rgba(52, 211, 153, 0.2); margin-top: 10px; }
-        .btn-danger { background: #ef4444; color: white; width: auto; padding: 6px 12px; font-size: 12px; border-radius: 6px; box-shadow: none; }
+        .btn-danger { background: #ef4444; color: white; width: auto; padding: 5px 10px; font-size: 11px; border-radius: 6px; box-shadow: none; }
         .btn-print { background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%); color: #0b0f19; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.2); margin-top: 15px; }
 
         .success-msg { 
@@ -222,15 +222,26 @@
             width: 100%; 
             border-collapse: collapse; 
             margin-top: 10px; 
-            font-size: 13px; 
+            font-size: 12px; 
             border-radius: 10px;
             overflow: hidden;
             border: 1px solid var(--border);
         }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid var(--border); }
-        th { background: #1a243f; color: var(--text-muted); font-size: 11px; text-transform: uppercase; }
-        .cart-img { width: 38px; height: 38px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border); }
+        th, td { padding: 8px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background: #1a243f; color: var(--text-muted); font-size: 10px; text-transform: uppercase; }
+        .cart-img { width: 34px; height: 34px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border); }
         
+        .qty-input {
+            width: 45px;
+            padding: 4px;
+            text-align: center;
+            font-size: 12px;
+            background: #0b0f19;
+            color: white;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+        }
+
         .total-box {
             display: flex;
             justify-content: space-between;
@@ -251,9 +262,10 @@
             .container { background: white; color: black; box-shadow: none; border: none; margin: 0; padding: 0; }
             .brand-header h1 { color: #000; }
             .brand-header p { color: #555; }
-            table { border: 1px solid #000; color: black; }
+            table { border: 1px solid #000; color: black; font-size: 11px; }
             th, td { border: 1px solid #000; color: black; }
             th { background: #eee !important; color: #000; }
+            .qty-input { border: none; background: transparent; color: black; font-weight: bold; text-align: left; }
             .total-box { background: white; color: black; border: 1px solid #000; }
         }
     </style>
@@ -267,9 +279,9 @@
 
 <!-- Navigation Tabs -->
 <div class="nav-tabs no-print">
-    <button class="tab-btn active" onclick="switchTab('entry')">➕ Add Product</button>
-    <button class="tab-btn" onclick="switchTab('search')">🔍 Search & Add</button>
-    <button class="tab-btn" onclick="switchTab('quotation')">📄 Quotation</button>
+    <button class="tab-btn active" onclick="switchTab('entry', event)">➕ Add Product</button>
+    <button class="tab-btn" onclick="switchTab('search', event)">🔍 Search & Add</button>
+    <button class="tab-btn" onclick="switchTab('quotation', event)">📄 Quotation</button>
 </div>
 
 <!-- Tab 1: Product Entry -->
@@ -294,7 +306,7 @@
                 <input type="text" id="productSize" required placeholder="e.g. Medium / 30x30">
             </div>
             <div class="form-group">
-                <label>Price (₹)</label>
+                <label>Price (Per Piece ₹)</label>
                 <input type="number" id="productPrice" required placeholder="0.00">
             </div>
             <button type="submit">Save Product</button>
@@ -342,12 +354,14 @@
                     <th>Desc</th>
                     <th>Size</th>
                     <th>Price</th>
-                    <th class="no-print">Action</th>
+                    <th>Qty</th>
+                    <th>Total</th>
+                    <th class="no-print">Act</th>
                 </tr>
             </thead>
             <tbody id="cartBody">
                 <tr>
-                    <td colspan="6" style="text-align:center; color:var(--text-muted); padding: 25px;">No products added yet.</td>
+                    <td colspan="8" style="text-align:center; color:var(--text-muted); padding: 25px;">No products added yet.</td>
                 </tr>
             </tbody>
         </table>
@@ -362,20 +376,18 @@
 </div>
 
 <script>
-    function switchTab(tabName) {
+    function switchTab(tabName, event) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
         
         if(tabName === 'entry') {
             document.getElementById('tab-entry').classList.add('active');
-            event.currentTarget.classList.add('active');
         } else if(tabName === 'search') {
             document.getElementById('tab-search').classList.add('active');
-            event.currentTarget.classList.add('active');
         } else if(tabName === 'quotation') {
             document.getElementById('tab-quotation').classList.add('active');
-            event.currentTarget.classList.add('active');
         }
+        if(event) event.currentTarget.classList.add('active');
     }
 
     let currentSearchedProduct = null;
@@ -447,24 +459,38 @@
 
     function addToQuotation() {
         if(!currentSearchedProduct) return;
-        quotationCart.push(currentSearchedProduct);
+        let existing = quotationCart.find(item => item.itemNumber.toLowerCase() === currentSearchedProduct.itemNumber.toLowerCase());
+        if(existing) {
+            existing.qty += 1;
+        } else {
+            let cartItem = { ...currentSearchedProduct, qty: 1 };
+            quotationCart.push(cartItem);
+        }
         renderCart();
         alert("✔️ Added to Quotation list!");
     }
 
+    function updateQty(index, newQty) {
+        let val = parseInt(newQty);
+        if(isNaN(val) || val < 1) val = 1;
+        quotationCart[index].qty = val;
+        renderCart();
+    }
+
     function renderCart() {
         const tbody = document.getElementById('cartBody');
-        tbody.innerHTM = "";
+        tbody.innerHTML = "";
         if(quotationCart.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding: 25px;">No products added yet.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding: 25px;">No products added yet.</td></tr>`;
             document.getElementById('totalPrice').innerText = "0";
             return;
         }
 
-        let total = 0;
-        tbody.innerHTML = "";
+        let grandTotal = 0;
         quotationCart.forEach((item, index) => {
-            total += Number(item.price);
+            let itemTotal = Number(item.price) * item.qty;
+            grandTotal += itemTotal;
+
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td><img src="${item.photo}" class="cart-img"></td>
@@ -472,11 +498,13 @@
                 <td>${item.description}</td>
                 <td>${item.size}</td>
                 <td>₹${item.price}</td>
+                <td><input type="number" class="qty-input" value="${item.qty}" min="1" onchange="updateQty(${index}, this.value)"></td>
+                <td><strong>₹${itemTotal}</strong></td>
                 <td class="no-print"><button class="btn-danger" onclick="removeFromCart(${index})">X</button></td>
             `;
             tbody.appendChild(tr);
         });
-        document.getElementById('totalPrice').innerText = total;
+        document.getElementById('totalPrice').innerText = grandTotal;
     }
 
     function removeFromCart(index) {
