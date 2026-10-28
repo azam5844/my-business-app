@@ -6,7 +6,7 @@
     <title>Business Product Manager</title>
     <style>
         body { font-family: Arial, sans-serif; background: #f4f4f9; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
         h2 { text-align: center; color: #007bff; }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: bold; }
@@ -14,10 +14,16 @@
         button { width: 100%; background: #007bff; color: white; border: none; padding: 12px; font-size: 16px; border-radius: 4px; cursor: pointer; }
         button:hover { background: #0056b3; }
         .success-msg { color: green; text-align: center; margin-top: 10px; font-weight: bold; }
+        .search-box { display: flex; gap: 10px; }
+        .search-box input { flex: 1; }
+        .search-box button { width: auto; padding: 10px 20px; }
+        .result-card { margin-top: 15px; padding: 15px; border: 1px solid #ddd; border-radius: 6px; background: #fafafa; display: none; }
+        .result-card img { max-width: 100%; height: auto; border-radius: 4px; margin-bottom: 10px; max-height: 200px; display: block; }
     </style>
 </head>
 <body>
 
+<!-- Product Entry Section -->
 <div class="container">
     <h2>Product Entry Form</h2>
     <form id="productForm">
@@ -46,7 +52,18 @@
     <div id="msg" class="success-msg"></div>
 </div>
 
+<!-- Product Search Section -->
+<div class="container">
+    <h2>Search Product</h2>
+    <div class="form-group search-box">
+        <input type="text" id="searchItemNo" placeholder="Item Number daaliye (jaise: Ppp123)">
+        <button type="button" onclick="searchProduct()">Search</button>
+    </div>
+    <div id="searchResult" class="result-card"></div>
+</div>
+
 <script>
+    // Save Product Logic
     document.getElementById('productForm').addEventListener('submit', function(e) {
         e.preventDefault();
 
@@ -64,7 +81,6 @@
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
                     
-                    // Image ko compress karke chhota karna taaki storage full na ho
                     let width = img.width;
                     let height = img.height;
                     const max_size = 500;
@@ -101,7 +117,7 @@
                         document.getElementById('msg').innerText = "Product Successfully Save Ho Gaya!";
                         document.getElementById('productForm').reset();
                     } catch (err) {
-                        alert("Storage full ho gayi hai ya error hai!");
+                        alert("Storage full ho gayi hai!");
                     }
 
                     setTimeout(() => {
@@ -113,6 +129,34 @@
             reader.readAsDataURL(photoInput.files[0]);
         }
     });
+
+    // Search Product Logic
+    function searchProduct() {
+        const query = document.getElementById('searchItemNo').value.trim();
+        const resultDiv = document.getElementById('searchResult');
+
+        if(!query) {
+            alert("Kripya Item Number daaliye!");
+            return;
+        }
+
+        let products = JSON.parse(localStorage.getItem('businessProducts')) || [];
+        const found = products.find(p => p.itemNumber.toLowerCase() === query.toLowerCase());
+
+        if(found) {
+            resultDiv.style.display = "block";
+            resultDiv.innerHTML = `
+                <img src="${found.photo}" alt="Product Photo">
+                <p><strong>Item Number:</strong> ${found.itemNumber}</p>
+                <p><strong>Description:</strong> ${found.description}</p>
+                <p><strong>Size:</strong> ${found.size}</p>
+                <p><strong>Price:</strong> ₹${found.price}</p>
+            `;
+        } else {
+            resultDiv.style.display = "block";
+            resultDiv.innerHTML = `<p style="color: red; text-align: center;">Yeh Item Number nahi mila!</p>`;
+        }
+    }
 </script>
 
 </body>
