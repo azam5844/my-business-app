@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Product Manager</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f4f9; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #007bff; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; background: #007bff; color: white; border: none; padding: 12px; font-size: 16px; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .success-msg { color: green; text-align: center; margin-top: 10px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Product Entry Form</h2>
+    <form id="productForm">
+        <div class="form-group">
+            <label>Item Number (Unique ID):</label>
+            <input type="text" id="itemNumber" required placeholder="Jaise: ITM-001">
+        </div>
+        <div class="form-group">
+            <label>Product Photo (Image):</label>
+            <input type="file" id="productPhoto" accept="image/*" required>
+        </div>
+        <div class="form-group">
+            <label>Description / Name:</label>
+            <textarea id="productDesc" rows="3" required placeholder="Product ki details yahan likhein"></textarea>
+        </div>
+        <div class="form-group">
+            <label>Size:</label>
+            <input type="text" id="productSize" required placeholder="Jaise: Medium / XL / 10x10">
+        </div>
+        <div class="form-group">
+            <label>Price (₹):</label>
+            <input type="number" id="productPrice" required placeholder="Price daaliye">
+        </div>
+        <button type="submit">Save Product</button>
+    </form>
+    <div id="msg" class="success-msg"></div>
+</div>
+
+<script>
+    document.getElementById('productForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const itemNumber = document.getElementById('itemNumber').value.trim();
+        const photoInput = document.getElementById('productPhoto');
+        const productDesc = document.getElementById('productDesc').value;
+        const productSize = document.getElementById('productSize').value;
+        const productPrice = document.getElementById('productPrice').value;
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const photoBase64 = event.target.result;
+
+            const productData = {
+                itemNumber: itemNumber,
+                photo: photoBase64,
+                description: productDesc,
+                size: productSize,
+                price: productPrice
+            };
+
+            // LocalStorage me save karna (Database ki jagah)
+            let products = JSON.parse(localStorage.getItem('businessProducts')) || [];
+            
+            // Check karein ki item number pehle se toh nahi hai
+            let existingIndex = products.findIndex(p => p.itemNumber === itemNumber);
+            if(existingIndex > -1) {
+                products[existingIndex] = productData; // Update kar do
+            } else {
+                products.push(productData); // Naya add kar do
+            }
+
+            localStorage.setItem('businessProducts', JSON.stringify(products));
+
+            document.getElementById('msg').innerText = "Product Successfully Save Ho Gaya!";
+            document.getElementById('productForm').reset();
+
+            setTimeout(() => {
+                document.getElementById('msg').innerText = "";
+            }, 3000);
+        };
+
+        if(photoInput.files[0]) {
+            reader.readAsDataURL(photoInput.files[0]);
+        }
+    });
+</script>
+
+</body>
+</html>
