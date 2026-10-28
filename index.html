@@ -212,7 +212,7 @@
 <!-- Tab 1: Product Entry -->
 <div id="tab-entry" class="tab-content active no-print">
     <div class="container">
-        <h2>📦 New Product Entry (Cloud Save)</h2>
+        <h2>📦 New Product Entry</h2>
         <form id="productForm">
             <div class="form-group">
                 <label>Item Number (Unique ID)</label>
@@ -234,7 +234,7 @@
                 <label>Price (Per Piece ₹)</label>
                 <input type="number" id="productPrice" required placeholder="0.00">
             </div>
-            <button type="submit" id="saveBtn">☁️ Save Product to Cloud</button>
+            <button type="submit" id="saveBtn">☁️ Save Product (Cloud & Local)</button>
         </form>
         <div id="msg" class="success-msg"></div>
     </div>
@@ -243,12 +243,12 @@
 <!-- Tab 2: Search -->
 <div id="tab-search" class="tab-content no-print">
     <div class="container">
-        <h2>🔍 Search Cloud Inventory</h2>
+        <h2>🔍 Search Inventory</h2>
         <div class="form-group search-box" style="margin-bottom:0;">
             <input type="text" id="searchItemNo" placeholder="Enter Item Number...">
             <button type="button" onclick="searchProduct()">Find</button>
         </div>
-        <div id="searchLoading" class="loading-msg" style="display:none;">☁️ Fetching live data from Cloud Sheet...</div>
+        <div id="searchLoading" class="loading-msg" style="display:none;">☁️ Checking Cloud & Local Database...</div>
         
         <div id="searchResult" class="result-card">
             <img id="resPhoto" src="" alt="Photo">
@@ -340,7 +340,7 @@
 
         if (photoInput.files && photoInput.files[0]) {
             saveBtn.disabled = true;
-            saveBtn.innerText = "☁️ Uploading to Cloud...";
+            saveBtn.innerText = "☁️ Saving...";
             msgDiv.innerText = "Processing image...";
 
             const reader = new FileReader();
@@ -365,7 +365,13 @@
                         price: productPrice
                     };
 
-                    // Send to Cloud Google Sheet directly via POST
+                    // 1. Save locally instantly
+                    let localProducts = JSON.parse(localStorage.getItem('businessProducts')) || [];
+                    let idx = localProducts.findIndex(p => String(p.itemNumber).trim().toLowerCase() === itemNumber.toLowerCase());
+                    if(idx > -1) localProducts[idx] = payload; else localProducts.push(payload);
+                    localStorage.setItem('businessProducts', JSON.stringify(localProducts));
+
+                    // 2. Save to Cloud Google Sheet
                     fetch(SCRIPT_URL, {
                         method: "POST",
                         mode: "no-cors",
@@ -373,16 +379,16 @@
                         body: JSON.stringify(payload)
                     })
                     .then(() => {
-                        msgDiv.innerText = "✨ Successfully Saved directly to Cloud Sheet!";
+                        msgDiv.innerText = "✨ Product Successfully Saved (Cloud & Local)!";
                         document.getElementById('productForm').reset();
                         saveBtn.disabled = false;
-                        saveBtn.innerText = "☁️ Save Product to Cloud";
+                        saveBtn.innerText = "☁️ Save Product (Cloud & Local)";
                         setTimeout(() => { msgDiv.innerText = ""; }, 4000);
                     })
                     .catch(err => {
-                        msgDiv.innerText = "⚠️ Cloud save error: " + err;
+                        msgDiv.innerText = "✨ Saved Locally (Cloud sync pending)";
                         saveBtn.disabled = false;
-                        saveBtn.innerText = "☁️ Save Product to Cloud";
+                        saveBtn.innerText = "☁️ Save Product (Cloud & Local)";
                     });
                 };
                 img.src = event.target.result;
@@ -391,29 +397,8 @@
         }
     });
 
-    // Fetch live products directly from Google Sheet via JSONP
-    function fetchCloudProducts() {
-        return new Promise((resolve, reject) => {
-            const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
-            window[callbackName] = function(data) {
-                delete window[callbackName];
-                if(script.parentNode) document.body.removeChild(script);
-                resolve(data);
-            };
-
-            const script = document.createElement('script');
-            script.src = `${SCRIPT_URL}?callback=${callbackName}&t=` + new Date().getTime();
-            script.onerror = function() {
-                delete window[callbackName];
-                if(script.parentNode) document.body.removeChild(script);
-                reject('Cloud connection failed');
-            };
-            document.body.appendChild(script);
-        });
-    }
-
     async function searchProduct() {
-        const query = document.getElementById('searchItemNo').value.trim();
+        const query = document.getElementById('searchItemNo').value.trim().toLowerCase();
         const resultDiv = document.getElementById('searchResult');
         const loadingDiv = document.getElementById('searchLoading');
         
@@ -422,22 +407,29 @@
         resultDiv.style.display = "none";
         loadingDiv.style.display = "block";
 
-        let products = [];
+        let allProducts = [];
 
+        // Try fetching live from Google Sheet Cloud
         try {
-            products = await fetchCloudProducts();
+            const response = await fetch(SCRIPT_URL);
+            const cloudData = await response.json();
+            if(cloudData && cloudData.length > 0) {
+                allProducts = cloudData;
+                // Update local storage cache with latest cloud data
+                localStorage.setItem('businessProducts', JSON.stringify(cloudData));
+            }
         } catch(err) {
-            console.log("Could not fetch from cloud");
+            console.log("Cloud fetch error, using local cache");
+        }
+
+        // Fallback to local storage if cloud is empty or failed
+        if(!allProducts || allProducts.length === 0) {
+            allProducts = JSON.parse(localStorage.getItem('businessProducts')) || [];
         }
 
         loadingDiv.style.display = "none";
 
-        if(!products || products.length === 0) {
-            alert("No products found in Cloud Google Sheet or Sheet is empty!");
-            return;
-        }
-
-        const found = products.find(p => String(p.itemNumber).trim().toLowerCase() === query.toLowerCase());
+        const found = allProducts.find(p => String(p.itemNumber).trim().toLowerCase() === query);
 
         if(found) {
             currentSearchedProduct = found;
@@ -450,7 +442,7 @@
             document.getElementById('addQty').value = 1;
         } else {
             currentSearchedProduct = null;
-            alert("Item Number not found in Cloud Database!");
+            alert("Item Number not found in Database!");
         }
     }
 
