@@ -322,7 +322,7 @@
             document.getElementById('tab-entry').classList.add('active');
         } else if(tabName === 'search') {
             document.getElementById('tab-search').classList.add('active');
-            syncCloudDataSilent(); // Auto-sync when entering search tab
+            syncCloudDataSilent();
         } else if(tabName === 'quotation') {
             document.getElementById('tab-quotation').classList.add('active');
         }
@@ -370,13 +370,11 @@
                         price: productPrice
                     };
 
-                    // 1. Save locally
                     let localProducts = JSON.parse(localStorage.getItem('amassCloudSync')) || [];
                     let idx = localProducts.findIndex(p => String(p.itemNumber).trim().toLowerCase() === itemNumber.toLowerCase());
                     if(idx > -1) localProducts[idx] = payload; else localProducts.push(payload);
                     localStorage.setItem('amassCloudSync', JSON.stringify(localProducts));
 
-                    // 2. Send to Google Sheet Cloud via POST
                     fetch(SCRIPT_URL, {
                         method: "POST",
                         mode: "no-cors",
@@ -402,7 +400,6 @@
         }
     });
 
-    // JSONP fetch helper
     function fetchCloudProducts() {
         return new Promise((resolve, reject) => {
             const callbackName = 'jsonp_cb_' + Date.now();
@@ -448,7 +445,7 @@
                 localStorage.setItem('amassCloudSync', JSON.stringify(cloudData));
             }
         } catch(err) {
-            console.log("Silent background sync failed");
+            console.log("Silent sync failed");
         }
     }
 
@@ -465,7 +462,6 @@
 
         let allProducts = [];
 
-        // 1. Fetch fresh from cloud first
         try {
             const cloudData = await fetchCloudProducts();
             if(cloudData && cloudData.length > 0) {
@@ -476,7 +472,6 @@
             console.log("Cloud fetch error during search");
         }
 
-        // 2. Fallback to local storage cache
         if(!allProducts || allProducts.length === 0) {
             allProducts = JSON.parse(localStorage.getItem('amassCloudSync')) || [];
         }
@@ -488,7 +483,11 @@
             return;
         }
 
-        const found = allProducts.find(p => String(p.itemNumber).trim().toLowerCase() === query);
+        // SMART MATCH: Matches exact item number or ignores leading zeros (e.g., '15' matches '00015')
+        const found = allProducts.find(p => {
+            const itemNo = String(p.itemNumber || "").trim().toLowerCase();
+            return itemNo === query || itemNo.replace(/^0+/, '') === query.replace(/^0+/, '');
+        });
 
         if(found) {
             currentSearchedProduct = found;
@@ -501,7 +500,7 @@
             document.getElementById('addQty').value = 1;
         } else {
             currentSearchedProduct = null;
-            alert("Item Number not found in Cloud or Local Database!");
+            alert("Item Number not found! Try clicking 'Sync Cloud' first.");
         }
     }
 
