@@ -3,29 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Business Product Manager</title>
+    <title>Business Product & Quotation Manager</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #f4f4f9; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        h2 { text-align: center; color: #007bff; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button { width: 100%; background: #007bff; color: white; border: none; padding: 12px; font-size: 16px; border-radius: 4px; cursor: pointer; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #eef2f5; margin: 0; padding: 15px; color: #333; }
+        .container { max-width: 650px; margin: 0 auto 20px auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        h2 { text-align: center; color: #007bff; margin-top: 0; }
+        .form-group { margin-bottom: 12px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
+        input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 14px; }
+        button { width: 100%; background: #007bff; color: white; border: none; padding: 12px; font-size: 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
         button:hover { background: #0056b3; }
+        .btn-add { background: #28a745; margin-top: 10px; }
+        .btn-add:hover { background: #218838; }
+        .btn-danger { background: #dc3545; width: auto; padding: 5px 10px; font-size: 12px; }
+        .btn-print { background: #17a2b8; margin-top: 15px; font-size: 16px; }
         .success-msg { color: green; text-align: center; margin-top: 10px; font-weight: bold; }
-        .search-box { display: flex; gap: 10px; }
+        
+        .search-box { display: flex; gap: 8px; }
         .search-box input { flex: 1; }
-        .search-box button { width: auto; padding: 10px 20px; }
-        .result-card { margin-top: 15px; padding: 15px; border: 1px solid #ddd; border-radius: 6px; background: #fafafa; display: none; }
-        .result-card img { max-width: 100%; height: auto; border-radius: 4px; margin-bottom: 10px; max-height: 200px; display: block; }
+        .search-box button { width: auto; padding: 10px 18px; }
+        
+        .result-card { margin-top: 15px; padding: 15px; border: 1px solid #e0e0e0; border-radius: 8px; background: #fdfdfd; display: none; text-align: center; }
+        .result-card img { max-width: 100%; height: auto; border-radius: 6px; max-height: 220px; object-fit: contain; margin-bottom: 10px; }
+        .product-details { text-align: left; margin-bottom: 10px; line-height: 1.6; }
+        
+        /* Quotation / Print Table */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .cart-img { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; }
+        
+        /* Print Layout Rules */
+        @media print {
+            body { background: white; padding: 0; }
+            .no-print { display: none !important; }
+            .container { box-shadow: none; border: none; max-width: 100%; padding: 0; }
+            #printArea { display: block !important; }
+            table { font-size: 12px; }
+            .btn-danger { display: none; }
+        }
     </style>
 </head>
 <body>
 
-<!-- Product Entry Section -->
-<div class="container">
-    <h2>Product Entry Form</h2>
+<!-- Section 1: Product Entry Form -->
+<div class="container no-print">
+    <h2>1. Product Entry Form</h2>
     <form id="productForm">
         <div class="form-group">
             <label>Item Number (Unique ID):</label>
@@ -37,11 +60,11 @@
         </div>
         <div class="form-group">
             <label>Description / Name:</label>
-            <textarea id="productDesc" rows="3" required placeholder="Product ki details yahan likhein"></textarea>
+            <textarea id="productDesc" rows="2" required placeholder="Product ki details yahan likhein"></textarea>
         </div>
         <div class="form-group">
             <label>Size:</label>
-            <input type="text" id="productSize" required placeholder="Jaise: Medium / XL / 10x10">
+            <input type="text" id="productSize" required placeholder="Jaise: Medium / 30x30">
         </div>
         <div class="form-group">
             <label>Price (₹):</label>
@@ -52,17 +75,54 @@
     <div id="msg" class="success-msg"></div>
 </div>
 
-<!-- Product Search Section -->
-<div class="container">
-    <h2>Search Product</h2>
+<!-- Section 2: Search Product -->
+<div class="container no-print">
+    <h2>2. Search Product</h2>
     <div class="form-group search-box">
-        <input type="text" id="searchItemNo" placeholder="Item Number daaliye (jaise: Ppp123)">
+        <input type="text" id="searchItemNo" placeholder="Item Number daaliye (jaise: ITM-001)">
         <button type="button" onclick="searchProduct()">Search</button>
     </div>
-    <div id="searchResult" class="result-card"></div>
+    
+    <div id="searchResult" class="result-card">
+        <img id="resPhoto" src="" alt="Product Photo">
+        <div class="product-details">
+            <p><strong>Item Number:</strong> <span id="resItemNo"></span></p>
+            <p><strong>Description:</strong> <span id="resDesc"></span></p>
+            <p><strong>Size:</strong> <span id="resSize"></span></p>
+            <p><strong>Price:</strong> ₹<span id="resPrice"></span></p>
+        </div>
+        <button class="btn-add" onclick="addToQuotation()">+ Add to Selected List</button>
+    </div>
+</div>
+
+<!-- Section 3: Selected Products / Quotation Sheet -->
+<div class="container" id="printArea">
+    <h2>Selected Products List</h2>
+    <table id="cartTable">
+        <thead>
+            <tr>
+                <th>Photo</th>
+                <th>Item No</th>
+                <th>Desc</th>
+                <th>Size</th>
+                <th>Price</th>
+                <th class="no-print">Action</th>
+            </tr>
+        </thead>
+        <tbody id="cartBody">
+            <tr>
+                <td colspan="6" style="text-align:center; color:#888;">Koi product select nahi kiya gaya hai.</td>
+            </tr>
+        </tbody>
+    </table>
+    <h3 style="text-align:right; margin-top:15px;">Total Amount: ₹<span id="totalPrice">0</span></h3>
+    <button class="btn-print no-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
 </div>
 
 <script>
+    let currentSearchedProduct = null;
+    let quotationCart = [];
+
     // Save Product Logic
     document.getElementById('productForm').addEventListener('submit', function(e) {
         e.preventDefault();
@@ -104,7 +164,7 @@
                     };
 
                     let products = JSON.parse(localStorage.getItem('businessProducts')) || [];
-                    let existingIndex = products.findIndex(p => p.itemNumber === itemNumber);
+                    let existingIndex = products.findIndex(p => p.itemNumber.toLowerCase() === itemNumber.toLowerCase());
                     
                     if(existingIndex > -1) {
                         products[existingIndex] = productData;
@@ -120,9 +180,7 @@
                         alert("Storage full ho gayi hai!");
                     }
 
-                    setTimeout(() => {
-                        document.getElementById('msg').innerText = "";
-                    }, 3000);
+                    setTimeout(() => { document.getElementById('msg').innerText = ""; }, 3000);
                 };
                 img.src = event.target.result;
             };
@@ -144,18 +202,61 @@
         const found = products.find(p => p.itemNumber.toLowerCase() === query.toLowerCase());
 
         if(found) {
+            currentSearchedProduct = found;
             resultDiv.style.display = "block";
-            resultDiv.innerHTML = `
-                <img src="${found.photo}" alt="Product Photo">
-                <p><strong>Item Number:</strong> ${found.itemNumber}</p>
-                <p><strong>Description:</strong> ${found.description}</p>
-                <p><strong>Size:</strong> ${found.size}</p>
-                <p><strong>Price:</strong> ₹${found.price}</p>
-            `;
+            document.getElementById('resPhoto').src = found.photo;
+            document.getElementById('resItemNo').innerText = found.itemNumber;
+            document.getElementById('resDesc').innerText = found.description;
+            document.getElementById('resSize').innerText = found.size;
+            document.getElementById('resPrice').innerText = found.price;
         } else {
-            resultDiv.style.display = "block";
-            resultDiv.innerHTML = `<p style="color: red; text-align: center;">Yeh Item Number nahi mila!</p>`;
+            resultDiv.style.display = "none";
+            currentSearchedProduct = null;
+            alert("Yeh Item Number nahi mila!");
         }
+    }
+
+    // Add to Selected List Logic
+    function addToQuotation() {
+        if(!currentSearchedProduct) return;
+        quotationCart.push(currentSearchedProduct);
+        renderCart();
+        alert("Product list mein add ho gaya!");
+    }
+
+    // Render Table Logic
+    function renderCart() {
+        const tbody = document.getElementById('cartBody');
+        tbody.innerHTML = "";
+
+        if(quotationCart.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#888;">Koi product select nahi kiya gaya hai.</td></tr>`;
+            document.getElementById('totalPrice').innerText = "0";
+            return;
+        }
+
+        let total = 0;
+        quotationCart.forEach((item, index) => {
+            total += Number(item.price);
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><img src="${item.photo}" class="cart-img"></td>
+                <td>${item.itemNumber}</td>
+                <td>${item.description}</td>
+                <td>${item.size}</td>
+                <td>₹${item.price}</td>
+                <td class="no-print"><button class="btn-danger" onclick="removeFromCart(${index})">Remove</button></td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        document.getElementById('totalPrice').innerText = total;
+    }
+
+    // Remove item from cart
+    function removeFromCart(index) {
+        quotationCart.splice(index, 1);
+        renderCart();
     }
 </script>
 
