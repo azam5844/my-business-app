@@ -3,23 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Business Pro Manager</title>
+    <title>Business Pro Manager - Dark Mode</title>
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --accent: #ec4899;
-            --success: #10b981;
-            --bg-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
-            --card-bg: rgba(255, 255, 255, 0.95);
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
+            --primary: #818cf8;
+            --primary-dark: #6366f1;
+            --accent: #f43f5e;
+            --success: #34d399;
+            --bg-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #db2777 100%);
+            --bg-color: #0b0f19;
+            --card-bg: #131c31;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #1e293b;
         }
 
         body { 
             font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-            background: #f1f5f9; 
+            background: var(--bg-color); 
             margin: 0; 
             padding: 15px; 
             color: var(--text-main); 
@@ -28,11 +29,11 @@
         .app-header {
             background: var(--bg-gradient);
             color: white;
-            padding: 20px;
+            padding: 22px;
             border-radius: 16px;
             text-align: center;
             margin-bottom: 20px;
-            box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.3);
         }
 
         .app-header h1 {
@@ -51,11 +52,12 @@
         /* Nav Tabs */
         .nav-tabs {
             display: flex;
-            background: #e2e8f0;
+            background: #131c31;
             padding: 4px;
             border-radius: 12px;
             margin-bottom: 20px;
             gap: 4px;
+            border: 1px solid var(--border);
         }
 
         .tab-btn {
@@ -72,9 +74,10 @@
         }
 
         .tab-btn.active {
-            background: white;
-            color: var(--primary);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            background: var(--primary);
+            color: #0b0f19;
+            box-shadow: 0 4px 12px rgba(129, 140, 248, 0.3);
+            font-weight: 700;
         }
 
         .tab-content {
@@ -89,8 +92,8 @@
             background: var(--card-bg); 
             padding: 20px; 
             border-radius: 16px; 
-            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05); 
-            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5); 
+            border: 1px solid var(--border);
             margin-bottom: 20px;
         }
 
@@ -115,6 +118,7 @@
             font-size: 12px; 
             color: var(--text-muted);
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         input, textarea { 
@@ -125,14 +129,14 @@
             box-sizing: border-box; 
             font-size: 14px; 
             transition: all 0.2s;
-            background: #f8fafc;
+            background: #0b0f19;
+            color: var(--text-main);
         }
 
         input:focus, textarea:focus {
             outline: none;
             border-color: var(--primary);
-            background: #fff;
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+            box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.15);
         }
 
         button { 
@@ -153,9 +157,9 @@
             transform: scale(0.98);
         }
 
-        .btn-add { background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); margin-top: 10px; }
-        .btn-danger { background: #ef4444; width: auto; padding: 6px 12px; font-size: 12px; border-radius: 6px; box-shadow: none; }
-        .btn-print { background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3); margin-top: 15px; }
+        .btn-add { background: linear-gradient(135deg, #059669 0%, #34d399 100%); color: #0b0f19; box-shadow: 0 4px 15px rgba(52, 211, 153, 0.2); margin-top: 10px; }
+        .btn-danger { background: #ef4444; color: white; width: auto; padding: 6px 12px; font-size: 12px; border-radius: 6px; box-shadow: none; }
+        .btn-print { background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%); color: #0b0f19; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.2); margin-top: 15px; }
 
         .success-msg { 
             color: var(--success); 
@@ -177,7 +181,7 @@
             padding: 15px; 
             border: 2px dashed var(--border); 
             border-radius: 12px; 
-            background: #f8fafc; 
+            background: #0b0f19; 
             display: none; 
             text-align: center; 
         }
@@ -189,7 +193,8 @@
             object-fit: contain; 
             margin-bottom: 10px; 
         }
-        .product-details { text-align: left; margin-bottom: 12px; font-size: 14px; line-height: 1.5; }
+        .product-details { text-align: left; margin-bottom: 12px; font-size: 14px; line-height: 1.5; color: var(--text-muted); }
+        .product-details strong { color: var(--text-main); }
         
         table { 
             width: 100%; 
@@ -201,7 +206,7 @@
             border: 1px solid var(--border);
         }
         th, td { padding: 10px; text-align: left; border-bottom: 1px solid var(--border); }
-        th { background: #f1f5f9; color: var(--text-muted); font-size: 11px; text-transform: uppercase; }
+        th { background: #1a243f; color: var(--text-muted); font-size: 11px; text-transform: uppercase; }
         .cart-img { width: 38px; height: 38px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border); }
         
         .total-box {
@@ -210,21 +215,22 @@
             align-items: center;
             margin-top: 15px;
             padding: 15px;
-            background: #f8fafc;
+            background: #0b0f19;
             border-radius: 10px;
             font-size: 16px;
             font-weight: 800;
-            color: var(--primary);
+            color: var(--success);
             border: 1px solid var(--border);
         }
 
         @media print {
-            body { background: white; padding: 0; }
+            body { background: white; color: black; padding: 0; }
             .no-print { display: none !important; }
-            .container { box-shadow: none; border: none; margin: 0; padding: 0; }
-            table { border: 1px solid #000; }
-            th, td { border: 1px solid #000; }
+            .container { background: white; color: black; box-shadow: none; border: none; margin: 0; padding: 0; }
+            table { border: 1px solid #000; color: black; }
+            th, td { border: 1px solid #000; color: black; }
             th { background: #eee !important; color: #000; }
+            .total-box { background: white; color: black; border: 1px solid #000; }
         }
     </style>
 </head>
@@ -232,7 +238,7 @@
 
 <div class="app-header no-print">
     <h1>🚀 Business Pro Manager</h1>
-    <p>Inventory & Quotation System</p>
+    <p>Dark Mode Inventory & Quotation System</p>
 </div>
 
 <!-- Navigation Tabs -->
