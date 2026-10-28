@@ -5,41 +5,225 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Business Product & Quotation Manager</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #eef2f5; margin: 0; padding: 15px; color: #333; }
-        .container { max-width: 650px; margin: 0 auto 20px auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-        h2 { text-align: center; color: #007bff; margin-top: 0; }
-        .form-group { margin-bottom: 12px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
-        input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 14px; }
-        button { width: 100%; background: #007bff; color: white; border: none; padding: 12px; font-size: 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        button:hover { background: #0056b3; }
-        .btn-add { background: #28a745; margin-top: 10px; }
-        .btn-add:hover { background: #218838; }
-        .btn-danger { background: #dc3545; width: auto; padding: 5px 10px; font-size: 12px; }
-        .btn-print { background: #17a2b8; margin-top: 15px; font-size: 16px; }
-        .success-msg { color: green; text-align: center; margin-top: 10px; font-weight: bold; }
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --success: #10b981;
+            --success-hover: #059669;
+            --danger: #ef4444;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        body { 
+            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+            background: var(--bg-color); 
+            margin: 0; 
+            padding: 20px; 
+            color: var(--text-main); 
+        }
+
+        .container { 
+            max-width: 650px; 
+            margin: 0 auto 20px auto; 
+            background: var(--card-bg); 
+            padding: 24px; 
+            border-radius: 16px; 
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.03); 
+            border: 1px solid var(--border-color);
+        }
+
+        h2 { 
+            color: var(--primary); 
+            font-size: 20px; 
+            margin-top: 0; 
+            margin-bottom: 20px; 
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group { 
+            margin-bottom: 16px; 
+        }
+
+        label { 
+            display: block; 
+            margin-bottom: 6px; 
+            font-weight: 600; 
+            font-size: 13px; 
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input, textarea { 
+            width: 100%; 
+            padding: 12px 14px; 
+            border: 1.5px solid var(--border-color); 
+            border-radius: 8px; 
+            box-sizing: border-box; 
+            font-size: 14px; 
+            transition: all 0.2s ease;
+            background: #fff;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        button { 
+            width: 100%; 
+            background: var(--primary); 
+            color: white; 
+            border: none; 
+            padding: 14px; 
+            font-size: 15px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            transition: background 0.2s ease, transform 0.1s active;
+        }
+
+        button:hover { 
+            background: var(--primary-hover); 
+        }
+
+        button:active {
+            transform: scale(0.99);
+        }
+
+        .btn-add { 
+            background: var(--success); 
+            margin-top: 12px; 
+        }
+        .btn-add:hover { 
+            background: var(--success-hover); 
+        }
+
+        .btn-danger { 
+            background: var(--danger); 
+            width: auto; 
+            padding: 6px 12px; 
+            font-size: 12px; 
+            border-radius: 6px;
+        }
+
+        .btn-print { 
+            background: #0ea5e9; 
+            margin-top: 20px; 
+            font-size: 16px; 
+        }
+        .btn-print:hover {
+            background: #0284c7;
+        }
+
+        .success-msg { 
+            color: var(--success); 
+            text-align: center; 
+            margin-top: 12px; 
+            font-weight: 600; 
+            font-size: 14px;
+        }
         
-        .search-box { display: flex; gap: 8px; }
-        .search-box input { flex: 1; }
-        .search-box button { width: auto; padding: 10px 18px; }
+        .search-box { 
+            display: flex; 
+            gap: 10px; 
+        }
+        .search-box input { 
+            flex: 1; 
+        }
+        .search-box button { 
+            width: auto; 
+            padding: 0 20px; 
+        }
         
-        .result-card { margin-top: 15px; padding: 15px; border: 1px solid #e0e0e0; border-radius: 8px; background: #fdfdfd; display: none; text-align: center; }
-        .result-card img { max-width: 100%; height: auto; border-radius: 6px; max-height: 220px; object-fit: contain; margin-bottom: 10px; }
-        .product-details { text-align: left; margin-bottom: 10px; line-height: 1.6; }
+        .result-card { 
+            margin-top: 18px; 
+            padding: 18px; 
+            border: 1.5px dashed var(--border-color); 
+            border-radius: 12px; 
+            background: #fafafa; 
+            display: none; 
+            text-align: center; 
+        }
+        .result-card img { 
+            max-width: 100%; 
+            height: auto; 
+            border-radius: 8px; 
+            max-height: 200px; 
+            object-fit: contain; 
+            margin-bottom: 12px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .product-details { 
+            text-align: left; 
+            margin-bottom: 15px; 
+            line-height: 1.6; 
+            font-size: 14px;
+        }
         
         /* Quotation / Print Table */
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        .cart-img { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; }
+        table { 
+            width: 100%; 
+            border-collapse: separate; 
+            border-spacing: 0; 
+            margin-top: 15px; 
+            font-size: 14px; 
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+        th, td { 
+            padding: 12px 14px; 
+            text-align: left; 
+            border-bottom: 1px solid var(--border-color); 
+        }
+        th { 
+            background-color: #f1f5f9; 
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .cart-img { 
+            width: 44px; 
+            height: 44px; 
+            object-fit: cover; 
+            border-radius: 6px; 
+            border: 1px solid var(--border-color);
+        }
         
+        .total-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px dashed var(--border-color);
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
         /* Print Layout Rules */
         @media print {
             body { background: white; padding: 0; }
             .no-print { display: none !important; }
-            .container { box-shadow: none; border: none; max-width: 100%; padding: 0; }
-            #printArea { display: block !important; }
-            table { font-size: 12px; }
+            .container { box-shadow: none; border: none; max-width: 100%; padding: 0; margin: 0; }
+            table { border: 1px solid #000; }
+            th, td { border: 1px solid #000; padding: 8px; }
+            th { background-color: #eee !important; color: #000; -webkit-print-color-adjust: exact; }
             .btn-danger { display: none; }
         }
     </style>
@@ -48,26 +232,26 @@
 
 <!-- Section 1: Product Entry Form -->
 <div class="container no-print">
-    <h2>1. Product Entry Form</h2>
+    <h2>📦 1. Product Entry Form</h2>
     <form id="productForm">
         <div class="form-group">
-            <label>Item Number (Unique ID):</label>
+            <label>Item Number (Unique ID)</label>
             <input type="text" id="itemNumber" required placeholder="Jaise: ITM-001">
         </div>
         <div class="form-group">
-            <label>Product Photo (Image):</label>
+            <label>Product Photo (Image)</label>
             <input type="file" id="productPhoto" accept="image/*" required>
         </div>
         <div class="form-group">
-            <label>Description / Name:</label>
+            <label>Description / Name</label>
             <textarea id="productDesc" rows="2" required placeholder="Product ki details yahan likhein"></textarea>
         </div>
         <div class="form-group">
-            <label>Size:</label>
+            <label>Size</label>
             <input type="text" id="productSize" required placeholder="Jaise: Medium / 30x30">
         </div>
         <div class="form-group">
-            <label>Price (₹):</label>
+            <label>Price (₹)</label>
             <input type="number" id="productPrice" required placeholder="Price daaliye">
         </div>
         <button type="submit">Save Product</button>
@@ -77,8 +261,8 @@
 
 <!-- Section 2: Search Product -->
 <div class="container no-print">
-    <h2>2. Search Product</h2>
-    <div class="form-group search-box">
+    <h2>🔍 2. Search Product</h2>
+    <div class="form-group search-box" style="margin-bottom:0;">
         <input type="text" id="searchItemNo" placeholder="Item Number daaliye (jaise: ITM-001)">
         <button type="button" onclick="searchProduct()">Search</button>
     </div>
@@ -97,7 +281,7 @@
 
 <!-- Section 3: Selected Products / Quotation Sheet -->
 <div class="container" id="printArea">
-    <h2>Selected Products List</h2>
+    <h2>📄 Selected Products & Quotation</h2>
     <table id="cartTable">
         <thead>
             <tr>
@@ -111,11 +295,16 @@
         </thead>
         <tbody id="cartBody">
             <tr>
-                <td colspan="6" style="text-align:center; color:#888;">Koi product select nahi kiya gaya hai.</td>
+                <td colspan="6" style="text-align:center; color:var(--text-muted); padding: 20px;">Koi product select nahi kiya gaya hai.</td>
             </tr>
         </tbody>
     </table>
-    <h3 style="text-align:right; margin-top:15px;">Total Amount: ₹<span id="totalPrice">0</span></h3>
+    
+    <div class="total-section">
+        <span>Total Amount:</span>
+        <span>₹<span id="totalPrice">0</span></span>
+    </div>
+
     <button class="btn-print no-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
 </div>
 
@@ -123,7 +312,6 @@
     let currentSearchedProduct = null;
     let quotationCart = [];
 
-    // Save Product Logic
     document.getElementById('productForm').addEventListener('submit', function(e) {
         e.preventDefault();
 
@@ -174,7 +362,7 @@
 
                     try {
                         localStorage.setItem('businessProducts', JSON.stringify(products));
-                        document.getElementById('msg').innerText = "Product Successfully Save Ho Gaya!";
+                        document.getElementById('msg').innerText = "✨ Product Successfully Save Ho Gaya!";
                         document.getElementById('productForm').reset();
                     } catch (err) {
                         alert("Storage full ho gayi hai!");
@@ -188,7 +376,6 @@
         }
     });
 
-    // Search Product Logic
     function searchProduct() {
         const query = document.getElementById('searchItemNo').value.trim();
         const resultDiv = document.getElementById('searchResult');
@@ -216,21 +403,19 @@
         }
     }
 
-    // Add to Selected List Logic
     function addToQuotation() {
         if(!currentSearchedProduct) return;
         quotationCart.push(currentSearchedProduct);
         renderCart();
-        alert("Product list mein add ho gaya!");
+        alert("✔️ Product quotation list mein add ho gaya!");
     }
 
-    // Render Table Logic
     function renderCart() {
         const tbody = document.getElementById('cartBody');
         tbody.innerHTML = "";
 
         if(quotationCart.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#888;">Koi product select nahi kiya gaya hai.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding: 20px;">Koi product select nahi kiya gaya hai.</td></tr>`;
             document.getElementById('totalPrice').innerText = "0";
             return;
         }
@@ -241,7 +426,7 @@
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td><img src="${item.photo}" class="cart-img"></td>
-                <td>${item.itemNumber}</td>
+                <td><strong>${item.itemNumber}</strong></td>
                 <td>${item.description}</td>
                 <td>${item.size}</td>
                 <td>₹${item.price}</td>
@@ -253,7 +438,6 @@
         document.getElementById('totalPrice').innerText = total;
     }
 
-    // Remove item from cart
     function removeFromCart(index) {
         quotationCart.splice(index, 1);
         renderCart();
