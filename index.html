@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Business Pro Manager - Dark Mode</title>
+    <title>Business Pro Manager</title>
     <style>
         :root {
             --primary: #818cf8;
@@ -255,7 +255,7 @@
         <form id="productForm">
             <div class="form-group">
                 <label>Item Number (Unique ID)</label>
-                <input type="text" id="itemNumber" required placeholder="Jaise: ITM-001">
+                <input type="text" id="itemNumber" required placeholder="e.g. ITM-001">
             </div>
             <div class="form-group">
                 <label>Product Photo</label>
@@ -263,11 +263,11 @@
             </div>
             <div class="form-group">
                 <label>Description / Name</label>
-                <textarea id="productDesc" rows="2" required placeholder="Product details..."></textarea>
+                <textarea id="productDesc" rows="2" required placeholder="Enter product details..."></textarea>
             </div>
             <div class="form-group">
                 <label>Size</label>
-                <input type="text" id="productSize" required placeholder="Jaise: Medium / 30x30">
+                <input type="text" id="productSize" required placeholder="e.g. Medium / 30x30">
             </div>
             <div class="form-group">
                 <label>Price (₹)</label>
@@ -383,7 +383,7 @@
                     else products.push(productData);
 
                     localStorage.setItem('businessProducts', JSON.stringify(products));
-                    document.getElementById('msg').innerText = "✨ Saved Successfully!";
+                    document.getElementById('msg').innerText = "✨ Product Successfully Saved!";
                     document.getElementById('productForm').reset();
                     setTimeout(() => { document.getElementById('msg').innerText = ""; }, 3000);
                 };
@@ -396,7 +396,7 @@
     function searchProduct() {
         const query = document.getElementById('searchItemNo').value.trim();
         const resultDiv = document.getElementById('searchResult');
-        if(!query) { alert("Enter Item Number!"); return; }
+        if(!query) { alert("Please enter an Item Number!"); return; }
 
         let products = JSON.parse(localStorage.getItem('businessProducts')) || [];
         const found = products.find(p => p.itemNumber.toLowerCase() === query.toLowerCase());
@@ -412,7 +412,7 @@
         } else {
             resultDiv.style.display = "none";
             currentSearchedProduct = null;
-            alert("Item not found!");
+            alert("Item Number not found!");
         }
     }
 
@@ -420,7 +420,7 @@
         if(!currentSearchedProduct) return;
         quotationCart.push(currentSearchedProduct);
         renderCart();
-        alert("✔️ Added to Quotation!");
+        alert("✔️ Added to Quotation list!");
     }
 
     function renderCart() {
