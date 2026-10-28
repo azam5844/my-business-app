@@ -159,7 +159,14 @@
 
         .btn-add { background: linear-gradient(135deg, #059669 0%, #34d399 100%); color: #0b0f19; box-shadow: 0 4px 15px rgba(52, 211, 153, 0.2); margin-top: 10px; }
         .btn-danger { background: #ef4444; color: white; width: auto; padding: 5px 10px; font-size: 11px; border-radius: 6px; box-shadow: none; }
-        .btn-print { background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%); color: #0b0f19; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.2); margin-top: 15px; }
+        
+        .action-btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .btn-print { background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%); color: #0b0f19; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.2); flex: 1; margin-top: 0; }
+        .btn-excel { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2); flex: 1; margin-top: 0; }
 
         .success-msg { 
             color: var(--success); 
@@ -371,7 +378,10 @@
             <span>₹<span id="totalPrice">0</span></span>
         </div>
 
-        <button class="btn-print no-print" onclick="window.print()">🖨️ Print / Save PDF</button>
+        <div class="action-btn-group no-print">
+            <button class="btn-print" onclick="window.print()">🖨️ Save PDF</button>
+            <button class="btn-excel" onclick="exportToExcel()">📊 Export Excel</button>
+        </div>
     </div>
 </div>
 
@@ -452,7 +462,7 @@
             document.getElementById('resPrice').innerText = found.price;
         } else {
             resultDiv.style.display = "none";
-            currentSearchedProduct = null;
+            currentSearchedPort = null;
             alert("Item Number not found!");
         }
     }
@@ -510,6 +520,29 @@
     function removeFromCart(index) {
         quotationCart.splice(index, 1);
         renderCart();
+    }
+
+    function exportToExcel() {
+        if(quotationCart.length === 0) {
+            alert("Quotation is empty!");
+            return;
+        }
+
+        let csv = "Item Number,Description,Size,Price (INR),Quantity,Total (INR)\n";
+        quotationCart.forEach(item => {
+            let desc = item.description.replace(/(\r\n|\n|\r)/gm, " "); // clean newlines
+            let row = `"${item.itemNumber}","${desc}","${item.size}",${item.price},${item.qty},${item.price * item.qty}`;
+            csv += row + "\n";
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = "Amass_Handicrafts_Quotation.csv";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
     }
 </script>
 
