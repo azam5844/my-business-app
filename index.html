@@ -230,7 +230,7 @@
         <form id="productForm">
             <div class="form-group">
                 <label>Item Number (Unique ID)</label>
-                <input type="text" id="itemNumber" required placeholder="e.g. ITM-001">
+                <input type="text" id="itemNumber" required placeholder="e.g. AMSH-136 or 00022">
             </div>
             <div class="form-group">
                 <label>Product Photo</label>
@@ -262,10 +262,10 @@
             <button type="button" class="btn-sync" onclick="syncCloudData()">🔄 Sync Cloud</button>
         </h2>
         <div class="form-group search-box" style="margin-bottom:0;">
-            <input type="text" id="searchItemNo" placeholder="Enter Item Number...">
+            <input type="text" id="searchItemNo" placeholder="Enter Item Number (e.g. amsh136)...">
             <button type="button" onclick="searchProduct()">Find</button>
         </div>
-        <div id="searchLoading" class="loading-msg" style="display:none;">☁️ Fetching live data from Cloud...</div>
+        <div id="searchLoading" class="loading-msg" style="display:none;">☁️ Searching Cloud & Local Database...</div>
         
         <div id="searchResult" class="result-card">
             <img id="resPhoto" src="" alt="Photo">
@@ -351,7 +351,8 @@
         const saveBtn = document.getElementById('saveBtn');
         const msgDiv = document.getElementById('msg');
         
-        const itemNumber = document.getElementById('itemNumber').value.trim();
+        // Exact string capture without removing leading zeros
+        const itemNumber = String(document.getElementById('itemNumber').value).trim();
         const photoInput = document.getElementById('productPhoto');
         const productDesc = document.getElementById('productDesc').value;
         const productSize = document.getElementById('productSize').value;
@@ -377,7 +378,7 @@
                     const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
 
                     const payload = {
-                        itemNumber: String(itemNumber).trim(), // Force string to keep leading zeros
+                        itemNumber: itemNumber,
                         photo: compressedBase64,
                         description: productDesc,
                         size: productSize,
@@ -385,7 +386,7 @@
                     };
 
                     let localProducts = JSON.parse(localStorage.getItem('amassCloudSync')) || [];
-                    let idx = localProducts.findIndex(p => String(p.itemNumber).trim().toLowerCase() === String(itemNumber).toLowerCase());
+                    let idx = localProducts.findIndex(p => String(p.itemNumber).trim() === itemNumber);
                     if(idx > -1) localProducts[idx] = payload; else localProducts.push(payload);
                     localStorage.setItem('amassCloudSync', JSON.stringify(localProducts));
 
@@ -441,6 +442,7 @@
         try {
             const cloudData = await fetchCloudProducts();
             if(cloudData && cloudData.length > 0) {
+                cloudData.forEach(p => p.itemNumber = String(p.itemNumber || "").trim());
                 localStorage.setItem('amassCloudSync', JSON.stringify(cloudData));
                 alert("✨ Cloud Synced Successfully! Total items: " + cloudData.length);
             } else {
@@ -456,6 +458,7 @@
         try {
             const cloudData = await fetchCloudProducts();
             if(cloudData && cloudData.length > 0) {
+                cloudData.forEach(p => p.itemNumber = String(p.itemNumber || "").trim());
                 localStorage.setItem('amassCloudSync', JSON.stringify(cloudData));
             }
         } catch(err) {
@@ -464,11 +467,11 @@
     }
 
     async function searchProduct() {
-        const query = document.getElementById('searchItemNo').value.trim().toLowerCase();
+        const rawQuery = document.getElementById('searchItemNo').value.trim();
         const resultDiv = document.getElementById('searchResult');
         const loadingDiv = document.getElementById('searchLoading');
         
-        if(!query) { alert("Please enter an Item Number!"); return; }
+        if(!rawQuery) { alert("Please enter an Item Number!"); return; }
 
         resultDiv.style.display = "none";
         loadingDiv.style.display = "block";
@@ -479,6 +482,7 @@
         try {
             const cloudData = await fetchCloudProducts();
             if(cloudData && cloudData.length > 0) {
+                cloudData.forEach(p => p.itemNumber = String(p.itemNumber || "").trim());
                 allProducts = cloudData;
                 localStorage.setItem('amassCloudSync', JSON.stringify(cloudData));
             }
@@ -497,9 +501,15 @@
             return;
         }
 
+        // ULTRA SMART MATCH:
+        // 1. Lowercase both (handles small/capital difference)
+        // 2. Remove all spaces (handles space differences like 'AMSH- 136' vs 'amsh136')
+        const cleanQuery = rawQuery.toLowerCase().replace(/\s+/g, '');
+
         const found = allProducts.find(p => {
-            const itemNo = String(p.itemNumber || "").trim().toLowerCase();
-            return itemNo === query || itemNo.replace(/^0+/, '') === query.replace(/^0+/, '');
+            const itemNo = String(p.itemNumber || "").trim();
+            const cleanItemNo = itemNo.toLowerCase().replace(/\s+/g, '');
+            return cleanItemNo === cleanQuery;
         });
 
         if(found) {
@@ -513,7 +523,7 @@
             document.getElementById('addQty').value = 1;
         } else {
             currentSearchedProduct = null;
-            alert("Item Number not found! Try clicking 'Sync Cloud' first.");
+            alert("Item Number not found! Make sure you typed the correct number.");
         }
     }
 
@@ -521,7 +531,7 @@
         if(!currentSearchedProduct) return;
         let qtyVal = parseInt(document.getElementById('addQty').value) || 1;
         
-        let existing = quotationCart.find(item => String(item.itemNumber).toLowerCase() === String(currentSearchedProduct.itemNumber).toLowerCase());
+        let existing = quotationCart.find(item => String(item.itemNumber).trim() === String(currentSearchedProduct.itemNumber).trim());
         if(existing) {
             existing.qty += qtyVal;
         } else {
@@ -556,7 +566,8 @@
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td><img src="${item.photo}" class="cart-img"></td>
-                <td><strong>&nbsp;${String(item.itemNumber)}</strong></td>
+                <!-- Original exact item number is kept and printed as-is in PDF/UI -->
+                <td><span style="font-family: monospace; font-weight: bold; white-space: nowrap;">${String(item.itemNumber)}</span></td>
                 <td>${item.description}</td>
                 <td>${item.size}</td>
                 <td>₹${item.price}</td>
