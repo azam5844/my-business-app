@@ -177,7 +177,10 @@
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
         th, td { padding: 8px; text-align: left; border-bottom: 1px solid var(--border); }
         th { background: #1a243f; color: var(--text-muted); font-size: 10px; text-transform: uppercase; }
-        .cart-img { width: 34px; height: 34px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border); }
+        
+        /* Removed border from product image inside cart */
+        .cart-img { width: 34px; height: 34px; object-fit: cover; border-radius: 4px; border: none; }
+        
         .qty-input { width: 45px; padding: 4px; text-align: center; font-size: 12px; background: #0b0f19; color: white; border: 1px solid var(--border); border-radius: 4px; }
 
         .total-box {
@@ -205,6 +208,7 @@
             table { border: 1px solid #000; color: black; font-size: 11px; }
             th, td { border: 1px solid #000; color: black; }
             th { background: #eee !important; color: #000; }
+            .cart-img { border: none !important; } /* Ensure no border in print mode either */
             .qty-input { border: none; background: transparent; color: black; font-weight: bold; text-align: left; -webkit-appearance: none; margin: 0; }
             .total-box { background: white; color: black; border: 1px solid #000; }
         }
@@ -500,9 +504,6 @@
             return;
         }
 
-        // SMART NORMALIZED MATCH:
-        // Handles leading zeros mismatch (e.g. '00022' matches '22' or vice-versa),
-        // spaces, and small/capital letters seamlessly.
         const cleanQuery = rawQuery.toLowerCase().replace(/\s+/g, '');
         const numericQuery = rawQuery.replace(/^0+/, '').toLowerCase();
 
@@ -511,10 +512,7 @@
             const cleanItem = itemNo.toLowerCase().replace(/\s+/g, '');
             const numericItem = itemNo.replace(/^0+/, '').toLowerCase();
 
-            // 1. Exact match (case & space insensitive)
             if (cleanItem === cleanQuery) return true;
-
-            // 2. Numeric/Zero-padded match (e.g. '00022' matches '22')
             if (numericItem !== "" && numericQuery !== "" && numericItem === numericQuery) return true;
 
             return false;
