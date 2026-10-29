@@ -53,8 +53,17 @@
             text-align: center;
         }
 
-        .auth-card h2 { color: var(--primary); font-size: 20px; margin-top: 0; margin-bottom: 5px; }
-        .auth-card p { color: var(--text-muted); font-size: 13px; margin-bottom: 20px; }
+        /* Perfectly Centered Title inside Auth Card */
+        .auth-card h2 { 
+            color: var(--primary); 
+            font-size: 20px; 
+            margin-top: 0; 
+            margin-bottom: 5px; 
+            text-align: center; 
+            width: 100%; 
+        }
+        
+        .auth-card p { color: var(--text-muted); font-size: 13px; margin-bottom: 20px; text-align: center; }
 
         .app-header {
             background: var(--bg-gradient);
@@ -246,13 +255,13 @@
 <!-- Password Security Modal -->
 <div id="authOverlay" class="auth-overlay">
     <div class="auth-card">
-        <h2>🔐 AMASS HANDICRAFTS</h2>
+        <h2>AMASS HANDICRAFTS</h2>
         <p>Enter password to unlock system</p>
         <div class="form-group" style="text-align: left; margin-bottom: 10px;">
             <input type="password" id="authPassword" placeholder="Enter Password..." autocomplete="current-password">
         </div>
         <button type="button" onclick="verifyPassword()">Unlock System</button>
-        <div id="authError" style="color: var(--accent); font-size: 12px; margin-top: 10px; font-weight: bold;"></div>
+        <div id="authError" style="color: var(--accent); font-size: 12px; margin-top: 10px; font-weight: bold; text-align: center;"></div>
     </div>
 </div>
 
@@ -387,7 +396,7 @@
             sessionStorage.setItem('amassAuthenticated', 'true');
             document.getElementById('authOverlay').style.display = 'none';
         } else {
-            errorDiv.innerText = "❌ Galat Password! Dobara koshish karein.";
+            errorDiv.innerText = "❌ Incorrect Password! Please try again.";
             document.getElementById('authPassword').value = "";
         }
     }
