@@ -159,14 +159,13 @@
             border-bottom: 2px solid var(--primary);
             padding-bottom: 15px;
             margin-bottom: 20px;
-            position: relative; /* Fixed position for date placement */
+            position: relative;
         }
         .brand-header h1 { margin: 0; font-size: 24px; font-weight: 900; color: var(--primary); letter-spacing: 1px; }
         .brand-header p { margin: 4px 0 0 0; font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; }
 
-        /* Dynamic Date styling */
         #quotationDate {
-            display: none; /* Hide in web view */
+            display: none;
             position: absolute;
             top: 0;
             left: 0;
@@ -195,29 +194,14 @@
             border: 1px solid var(--border);
         }
 
-        /* PRINT STYLES - Crucial for clean PDF */
         @media print {
-            /* 1. Hide default headers/footers (Gmail, URL, Time) */
-            @page {
-                size: auto;   /* auto is the current printer page size */
-                margin: 0mm;  /* this affects the margin in the printer settings */
-            }
-
-            body { 
-                background: white; 
-                color: black; 
-                padding: 10mm; /* Add safe padding so content isn't cut off */
-                margin: 0;
-            }
-
+            @page { size: auto; margin: 0mm; }
+            body { background: white; color: black; padding: 10mm; margin: 0; }
             .no-print { display: none !important; }
             .container { background: white; color: black; box-shadow: none; border: none; margin: 0; padding: 0; }
             .brand-header h1 { color: #000; }
             .brand-header p { color: #555; }
-            
-            /* Show dynmic date in print only */
             #quotationDate { display: block; color: black; }
-
             table { border: 1px solid #000; color: black; font-size: 11px; }
             th, td { border: 1px solid #000; color: black; }
             th { background: #eee !important; color: #000; }
@@ -304,9 +288,7 @@
 <div id="tab-quotation" class="tab-content active-print">
     <div class="container" id="printArea">
         <div class="brand-header">
-            <!-- Dynamic Date placeholder -->
             <div id="quotationDate">Date: --/--/----</div>
-            
             <h1>AMASS HANDICRAFTS</h1>
             <p>Official Quotation & Invoice Summary</p>
         </div>
@@ -592,20 +574,18 @@
         renderCart();
     }
 
-    function preparAndPrint() {
+    function prepareAndPrint() {
         if(quotationCart.length === 0) {
             alert("Quotation list is empty!");
             return;
         }
         
-        // 1. Set current date dynamically in DD/MM/YYYY format
         const now = new Date();
         const day = String(now.getDate()).padStart(2, '0');
         const month = String(now.getMonth() + 1).padStart(2, '0');
         const year = now.getFullYear();
         document.getElementById('quotationDate').innerText = `Date: ${day}/${month}/${year}`;
         
-        // 2. Trigger print (Print CSS will remove headers/footers)
         window.print();
     }
 
