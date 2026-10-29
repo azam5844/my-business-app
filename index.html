@@ -50,31 +50,34 @@
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
             width: 100%;
             max-width: 360px;
-            display: flex;
-            flex-direction: column;
-            align-items: center; /* Force everything inside to center perfectly */
-            text-align: center;
+            box-sizing: border-box;
+            text-align: center !important;
         }
 
+        /* Force Title and Subtitle to Center with !important */
         .auth-card h2 { 
             color: var(--primary); 
             font-size: 20px; 
             margin-top: 0; 
-            margin-bottom: 5px; 
-            text-align: center; 
-            width: 100%; 
+            margin-bottom: 8px; 
+            display: block !important; 
+            text-align: center !important; 
+            width: 100% !important; 
+            justify-content: center !important;
         }
         
         .auth-card p { 
             color: var(--text-muted); 
             font-size: 13px; 
             margin-bottom: 20px; 
-            text-align: center; 
-            width: 100%; 
+            display: block !important;
+            text-align: center !important; 
+            width: 100% !important; 
         }
 
         .auth-card .form-group {
             width: 100%;
+            margin-bottom: 12px;
         }
 
         .auth-card button {
@@ -273,7 +276,7 @@
     <div class="auth-card">
         <h2>AMASS HANDICRAFTS</h2>
         <p>Enter password to unlock system</p>
-        <div class="form-group" style="margin-bottom: 10px;">
+        <div class="form-group">
             <input type="password" id="authPassword" placeholder="Enter Password..." autocomplete="current-password">
         </div>
         <button type="button" onclick="verifyPassword()">Unlock System</button>
