@@ -262,7 +262,7 @@
             <button type="button" class="btn-sync" onclick="syncCloudData()">🔄 Sync Cloud</button>
         </h2>
         <div class="form-group search-box" style="margin-bottom:0;">
-            <input type="text" id="searchItemNo" placeholder="Enter Item Number (e.g. 00022 or amsh136)...">
+            <input type="text" id="searchItemNo" placeholder="Enter Item Number (e.g. 00022)...">
             <button type="button" onclick="searchProduct()">Find</button>
         </div>
         <div id="searchLoading" class="loading-msg" style="display:none;">☁️ Searching Cloud & Local Database...</div>
@@ -385,7 +385,7 @@
                     };
 
                     let localProducts = JSON.parse(localStorage.getItem('amassCloudSync')) || [];
-                    let idx = localProducts.findIndex(p => String(p.itemNumber).trim() === itemNumber);
+                    let idx = localProducts.findIndex(p => String(p.itemNumber).trim().toLowerCase() === itemNumber.toLowerCase());
                     if(idx > -1) localProducts[idx] = payload; else localProducts.push(payload);
                     localStorage.setItem('amassCloudSync', JSON.stringify(localProducts));
 
@@ -500,20 +500,24 @@
             return;
         }
 
-        // SMART DUAL MATCH:
-        // 1. First tries exact match (e.g. '00022' matches '00022').
-        // 2. If not found, tries flexible match (ignoring case & spaces for codes like AMSH-136).
+        // SMART NORMALIZED MATCH:
+        // Handles leading zeros mismatch (e.g. '00022' matches '22' or vice-versa),
+        // spaces, and small/capital letters seamlessly.
+        const cleanQuery = rawQuery.toLowerCase().replace(/\s+/g, '');
+        const numericQuery = rawQuery.replace(/^0+/, '').toLowerCase();
+
         const found = allProducts.find(p => {
             const itemNo = String(p.itemNumber || "").trim();
-            
-            // Exact match
-            if (itemNo === rawQuery) return true;
-
-            // Flexible match (lowercase & no spaces for both query and item)
             const cleanItem = itemNo.toLowerCase().replace(/\s+/g, '');
-            const cleanQuery = rawQuery.toLowerCase().replace(/\s+/g, '');
+            const numericItem = itemNo.replace(/^0+/, '').toLowerCase();
 
-            return cleanItem === cleanQuery;
+            // 1. Exact match (case & space insensitive)
+            if (cleanItem === cleanQuery) return true;
+
+            // 2. Numeric/Zero-padded match (e.g. '00022' matches '22')
+            if (numericItem !== "" && numericQuery !== "" && numericItem === numericQuery) return true;
+
+            return false;
         });
 
         if(found) {
@@ -535,7 +539,7 @@
         if(!currentSearchedProduct) return;
         let qtyVal = parseInt(document.getElementById('addQty').value) || 1;
         
-        let existing = quotationCart.find(item => String(item.itemNumber).trim() === String(currentSearchedProduct.itemNumber).trim());
+        let existing = quotationCart.find(item => String(item.itemNumber).trim().toLowerCase() === String(currentSearchedProduct.itemNumber).trim().toLowerCase());
         if(existing) {
             existing.qty += qtyVal;
         } else {
