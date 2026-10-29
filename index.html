@@ -230,7 +230,7 @@
         <form id="productForm">
             <div class="form-group">
                 <label>Item Number (Unique ID)</label>
-                <input type="text" id="itemNumber" required placeholder="e.g. AMSH-136 or 00022">
+                <input type="text" id="itemNumber" required placeholder="e.g. 00022 or AMSH-136">
             </div>
             <div class="form-group">
                 <label>Product Photo</label>
@@ -262,7 +262,7 @@
             <button type="button" class="btn-sync" onclick="syncCloudData()">🔄 Sync Cloud</button>
         </h2>
         <div class="form-group search-box" style="margin-bottom:0;">
-            <input type="text" id="searchItemNo" placeholder="Enter Item Number (e.g. amsh136)...">
+            <input type="text" id="searchItemNo" placeholder="Enter Item Number (e.g. 00022 or amsh136)...">
             <button type="button" onclick="searchProduct()">Find</button>
         </div>
         <div id="searchLoading" class="loading-msg" style="display:none;">☁️ Searching Cloud & Local Database...</div>
@@ -351,7 +351,6 @@
         const saveBtn = document.getElementById('saveBtn');
         const msgDiv = document.getElementById('msg');
         
-        // Exact string capture without removing leading zeros
         const itemNumber = String(document.getElementById('itemNumber').value).trim();
         const photoInput = document.getElementById('productPhoto');
         const productDesc = document.getElementById('productDesc').value;
@@ -501,15 +500,20 @@
             return;
         }
 
-        // ULTRA SMART MATCH:
-        // 1. Lowercase both (handles small/capital difference)
-        // 2. Remove all spaces (handles space differences like 'AMSH- 136' vs 'amsh136')
-        const cleanQuery = rawQuery.toLowerCase().replace(/\s+/g, '');
-
+        // SMART DUAL MATCH:
+        // 1. First tries exact match (e.g. '00022' matches '00022').
+        // 2. If not found, tries flexible match (ignoring case & spaces for codes like AMSH-136).
         const found = allProducts.find(p => {
             const itemNo = String(p.itemNumber || "").trim();
-            const cleanItemNo = itemNo.toLowerCase().replace(/\s+/g, '');
-            return cleanItemNo === cleanQuery;
+            
+            // Exact match
+            if (itemNo === rawQuery) return true;
+
+            // Flexible match (lowercase & no spaces for both query and item)
+            const cleanItem = itemNo.toLowerCase().replace(/\s+/g, '');
+            const cleanQuery = rawQuery.toLowerCase().replace(/\s+/g, '');
+
+            return cleanItem === cleanQuery;
         });
 
         if(found) {
@@ -566,7 +570,6 @@
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td><img src="${item.photo}" class="cart-img"></td>
-                <!-- Original exact item number is kept and printed as-is in PDF/UI -->
                 <td><span style="font-family: monospace; font-weight: bold; white-space: nowrap;">${String(item.itemNumber)}</span></td>
                 <td>${item.description}</td>
                 <td>${item.size}</td>
