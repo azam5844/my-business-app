@@ -377,7 +377,7 @@
                     const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
 
                     const payload = {
-                        itemNumber: itemNumber,
+                        itemNumber: String(itemNumber).trim(), // Force string to keep leading zeros
                         photo: compressedBase64,
                         description: productDesc,
                         size: productSize,
@@ -385,7 +385,7 @@
                     };
 
                     let localProducts = JSON.parse(localStorage.getItem('amassCloudSync')) || [];
-                    let idx = localProducts.findIndex(p => String(p.itemNumber).trim().toLowerCase() === itemNumber.toLowerCase());
+                    let idx = localProducts.findIndex(p => String(p.itemNumber).trim().toLowerCase() === String(itemNumber).toLowerCase());
                     if(idx > -1) localProducts[idx] = payload; else localProducts.push(payload);
                     localStorage.setItem('amassCloudSync', JSON.stringify(localProducts));
 
@@ -506,7 +506,7 @@
             currentSearchedProduct = found;
             resultDiv.style.display = "block";
             document.getElementById('resPhoto').src = found.photo;
-            document.getElementById('resItemNo').innerText = found.itemNumber;
+            document.getElementById('resItemNo').innerText = String(found.itemNumber);
             document.getElementById('resDesc').innerText = found.description;
             document.getElementById('resSize').innerText = found.size;
             document.getElementById('resPrice').innerText = found.price;
@@ -556,7 +556,7 @@
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td><img src="${item.photo}" class="cart-img"></td>
-                <td><strong>${item.itemNumber}</strong></td>
+                <td><strong>&nbsp;${String(item.itemNumber)}</strong></td>
                 <td>${item.description}</td>
                 <td>${item.size}</td>
                 <td>₹${item.price}</td>
@@ -604,7 +604,7 @@
             let cleanDesc = item.description.replace(/"/g, '""').replace(/(\r\n|\n|\r)/gm, " ");
             let itemTotal = item.price * item.qty;
             grandTotal += itemTotal;
-            csv += `"${item.itemNumber}","${cleanDesc}","${item.size}",${item.price},${item.qty},${itemTotal}\n`;
+            csv += `"="\`"${String(item.itemNumber)}"""\","${cleanDesc}","${item.size}",${item.price},${item.qty},${itemTotal}\n`;
         });
 
         csv += `\n,,,,Grand Total,${grandTotal}\n`;
