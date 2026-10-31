@@ -284,20 +284,20 @@
 </div>
 
 <div class="app-header no-print">
-    <h1>ð AMASS HANDICRAFTS</h1>
+    <h1>🚀 AMASS HANDICRAFTS</h1>
     <p>Cloud Synchronized Business Manager</p>
 </div>
 
 <div class="nav-tabs no-print">
-    <button class="tab-btn active" onclick="switchTab('entry', event)">â Add Product</button>
-    <button class="tab-btn" onclick="switchTab('search', event)">ð Search & Add</button>
-    <button class="tab-btn" onclick="switchTab('quotation', event)">ð Quotation</button>
+    <button class="tab-btn active" onclick="switchTab('entry', event)">➕ Add Product</button>
+    <button class="tab-btn" onclick="switchTab('search', event)">🔍 Search & Add</button>
+    <button class="tab-btn" onclick="switchTab('quotation', event)">📄 Quotation</button>
 </div>
 
 <!-- Tab 1: Product Entry / Edit -->
 <div id="tab-entry" class="tab-content active no-print">
     <div class="container">
-        <h2 id="formTitle">ð¦ New Product Entry</h2>
+        <h2 id="formTitle">📦 New Product Entry</h2>
         <form id="productForm">
             <div class="form-group">
                 <label>Item Number (Unique ID)</label>
@@ -316,10 +316,10 @@
                 <input type="text" id="productSize" required placeholder="e.g. Medium / 30x30">
             </div>
             <div class="form-group">
-                <label>Price (Per Piece â¹)</label>
+                <label>Price (Per Piece ₹)</label>
                 <input type="number" id="productPrice" required placeholder="0.00">
             </div>
-            <button type="submit" id="saveBtn">âï¸ Save Product (Cloud & Local)</button>
+            <button type="submit" id="saveBtn">☁️ Save Product (Cloud & Local)</button>
         </form>
         <div id="msg" class="success-msg"></div>
     </div>
@@ -329,14 +329,14 @@
 <div id="tab-search" class="tab-content no-print">
     <div class="container">
         <h2>
-            <span>ð Search Inventory</span>
-            <button type="button" class="btn-sync" onclick="syncCloudData()">ð Sync Cloud</button>
+            <span>🔍 Search Inventory</span>
+            <button type="button" class="btn-sync" onclick="syncCloudData()">🔄 Sync Cloud</button>
         </h2>
         <div class="form-group search-box" style="margin-bottom:0;">
             <input type="text" id="searchItemNo" placeholder="Enter Item Number (e.g. 00022)..." onkeydown="handleSearchKey(event)">
             <button type="button" onclick="searchProduct()">Find</button>
         </div>
-        <div id="searchLoading" class="loading-msg" style="display:none;">âï¸ Searching Cloud & Local Database...</div>
+        <div id="searchLoading" class="loading-msg" style="display:none;">☁️ Searching Cloud & Local Database...</div>
         
         <div id="searchResult" class="result-card">
             <img id="resPhoto" src="" alt="Photo">
@@ -344,14 +344,14 @@
                 <p><strong>Item No:</strong> <span id="resItemNo"></span></p>
                 <p><strong>Desc:</strong> <span id="resDesc"></span></p>
                 <p><strong>Size:</strong> <span id="resSize"></span></p>
-                <p><strong>Price:</strong> â¹<span id="resPrice"></span></p>
+                <p><strong>Price:</strong> ₹<span id="resPrice"></span></p>
             </div>
             <div class="search-qty-box">
                 <label style="margin:0;">Select Quantity:</label>
                 <input type="number" id="addQty" value="1" min="1">
             </div>
             <button class="btn-add" onclick="addToQuotation()">+ Add to Quotation</button>
-            <button class="btn-edit-prod" onclick="loadProductForEdit()">âï¸ Edit Product Details</button>
+            <button class="btn-edit-prod" onclick="loadProductForEdit()">✏️ Edit Product Details</button>
         </div>
     </div>
 </div>
@@ -387,12 +387,12 @@
         
         <div class="total-box">
             <span>Total Amount:</span>
-            <span>â¹<span id="totalPrice">0</span></span>
+            <span>₹<span id="totalPrice">0</span></span>
         </div>
 
         <div class="action-btn-group no-print">
-            <button class="btn-print" onclick="prepareAndPrint()">ð¨ï¸ Save PDF</button>
-            <button class="btn-excel" onclick="exportToExcel()">ð Export Excel</button>
+            <button class="btn-print" onclick="prepareAndPrint()">🖨️ Save PDF</button>
+            <button class="btn-excel" onclick="exportToExcel()">📊 Export Excel</button>
         </div>
     </div>
 </div>
@@ -414,7 +414,7 @@
             sessionStorage.setItem('amassAuthenticated', 'true');
             document.getElementById('authOverlay').style.display = 'none';
         } else {
-            errorDiv.innerText = "â Incorrect Password! Please try again.";
+            errorDiv.innerText = "❌ Incorrect Password! Please try again.";
             document.getElementById('authPassword').value = "";
         }
     }
@@ -463,7 +463,7 @@
         const productPrice = document.getElementById('productPrice').value;
 
         saveBtn.disabled = true;
-        saveBtn.innerText = "âï¸ Saving to Cloud...";
+        saveBtn.innerText = "☁️ Saving to Cloud...";
         msgDiv.innerText = "Processing and syncing data...";
 
         function processAndSave(photoBase64) {
@@ -491,14 +491,14 @@
                 body: JSON.stringify(payload)
             })
             .then(() => {
-                msgDiv.innerText = "â¨ Successfully Saved/Updated in Cloud Sheet & Local Sync!";
+                msgDiv.innerText = "✨ Successfully Saved/Updated in Cloud Sheet & Local Sync!";
                 document.getElementById('productForm').reset();
                 resetFormMode();
                 saveBtn.disabled = false;
                 setTimeout(() => { msgDiv.innerText = ""; }, 4000);
             })
             .catch(err => {
-                msgDiv.innerText = "â¨ Saved Locally (Cloud sync pending)";
+                msgDiv.innerText = "✨ Saved Locally (Cloud sync pending)";
                 resetFormMode();
                 saveBtn.disabled = false;
             });
@@ -546,8 +546,8 @@
         document.getElementById('productPrice').value = currentSearchedProduct.price;
         
         // Change UI header to indicate Edit mode
-        document.getElementById('formTitle').innerText = "âï¸ Edit Product (" + currentSearchedProduct.itemNumber + ")";
-        document.getElementById('saveBtn').innerText = "âï¸ Update Product (Cloud & Local)";
+        document.getElementById('formTitle').innerText = "✏️ Edit Product (" + currentSearchedProduct.itemNumber + ")";
+        document.getElementById('saveBtn').innerText = "☁️ Update Product (Cloud & Local)";
         
         // Switch to Entry/Edit tab
         switchTab('entry');
@@ -556,8 +556,8 @@
 
     function resetFormMode() {
         document.getElementById('itemNumber').readOnly = false;
-        document.getElementById('formTitle').innerText = "ð¦ New Product Entry";
-        document.getElementById('saveBtn').innerText = "âï¸ Save Product (Cloud & Local)";
+        document.getElementById('formTitle').innerText = "📦 New Product Entry";
+        document.getElementById('saveBtn').innerText = "☁️ Save Product (Cloud & Local)";
         currentSearchedProduct = null;
     }
 
@@ -584,13 +584,13 @@
     async function syncCloudData() {
         const loadingDiv = document.getElementById('searchLoading');
         loadingDiv.style.display = "block";
-        loadingDiv.innerText = "ð Syncing with Cloud Google Sheet...";
+        loadingDiv.innerText = "🔄 Syncing with Cloud Google Sheet...";
         try {
             const cloudData = await fetchCloudProducts();
             if(cloudData && cloudData.length > 0) {
                 cloudData.forEach(p => p.itemNumber = String(p.itemNumber || "").trim());
                 localStorage.setItem('amassCloudSync', JSON.stringify(cloudData));
-                alert("â¨ Cloud Synced Successfully! Total items: " + cloudData.length);
+                alert("✨ Cloud Synced Successfully! Total items: " + cloudData.length);
             } else {
                 alert("Cloud Sheet is currently empty.");
             }
@@ -621,7 +621,7 @@
 
         resultDiv.style.display = "none";
         loadingDiv.style.display = "block";
-        loadingDiv.innerText = "âï¸ Searching Cloud & Local Database...";
+        loadingDiv.innerText = "☁️ Searching Cloud & Local Database...";
 
         let allProducts = [];
 
@@ -688,7 +688,7 @@
             quotationCart.push(cartItem);
         }
         renderCart();
-        alert("âï¸ Added to Quotation list!");
+        alert("✔️ Added to Quotation list!");
     }
 
     function updateQty(index, newQty) {
@@ -718,9 +718,9 @@
                 <td><span style="font-family: monospace; font-weight: bold; white-space: nowrap;">${String(item.itemNumber)}</span></td>
                 <td>${item.description}</td>
                 <td>${item.size}</td>
-                <td>â¹${item.price}</td>
+                <td>₹${item.price}</td>
                 <td><input type="number" class="qty-input" value="${item.qty}" min="1" onchange="updateQty(${index}, this.value)"></td>
-                <td><strong>â¹${itemTotal}</strong></td>
+                <td><strong>₹${itemTotal}</strong></td>
                 <td class="no-print"><button class="btn-danger" onclick="removeFromCart(${index})">X</button></td>
             `;
             tbody.appendChild(tr);
