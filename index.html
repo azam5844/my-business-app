@@ -232,9 +232,19 @@
         }
 
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
-        th, td { padding: 8px; text-align: left; border-bottom: 1px solid var(--border); }
+        th, td { padding: 8px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: middle; }
         th { background: #1a243f; color: var(--text-muted); font-size: 10px; text-transform: uppercase; }
-        .cart-img { width: 34px; height: 34px; object-fit: cover; border-radius: 4px; border: none; }
+        
+        /* Updated Cart Image styling so photos never get cut */
+        .cart-img { 
+            width: 45px; 
+            height: 45px; 
+            object-fit: contain; 
+            background: #ffffff;
+            border-radius: 4px; 
+            display: block;
+        }
+
         .qty-input { width: 45px; padding: 4px; text-align: center; font-size: 12px; background: #0b0f19; color: white; border: 1px solid var(--border); border-radius: 4px; }
 
         .total-box {
@@ -262,7 +272,16 @@
             table { border: 1px solid #000; color: black; font-size: 11px; }
             th, td { border: 1px solid #000; color: black; }
             th { background: #eee !important; color: #000; }
-            .cart-img { border: none !important; }
+            
+            /* Print mode image adjustment */
+            .cart-img { 
+                border: none !important; 
+                background: transparent !important;
+                width: 45px;
+                height: 45px;
+                object-fit: contain;
+            }
+
             .qty-input { border: none; background: transparent; color: black; font-weight: bold; text-align: left; -webkit-appearance: none; margin: 0; }
             .total-box { background: white; color: black; border: 1px solid #000; }
         }
@@ -450,7 +469,6 @@
     let currentSearchedProduct = null;
     let quotationCart = [];
 
-    // Form submission for both new entry and update
     document.getElementById('productForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const saveBtn = document.getElementById('saveBtn');
@@ -524,7 +542,6 @@
             };
             reader.readAsDataURL(photoInput.files[0]);
         } else {
-            // If editing and no new photo selected, use the existing photo from currentSearchedProduct
             let existingPhoto = currentSearchedProduct ? currentSearchedProduct.photo : "";
             if(!existingPhoto) {
                 let localProducts = JSON.parse(localStorage.getItem('amassCloudSync')) || [];
@@ -538,18 +555,15 @@
     function loadProductForEdit() {
         if(!currentSearchedProduct) return;
         
-        // Populate form with current searched product details
         document.getElementById('itemNumber').value = currentSearchedProduct.itemNumber;
-        document.getElementById('itemNumber').readOnly = true; // Item number shouldn't change during edit
+        document.getElementById('itemNumber').readOnly = true;
         document.getElementById('productDesc').value = currentSearchedProduct.description;
         document.getElementById('productSize').value = currentSearchedProduct.size;
         document.getElementById('productPrice').value = currentSearchedProduct.price;
         
-        // Change UI header to indicate Edit mode
         document.getElementById('formTitle').innerText = "✏️ Edit Product (" + currentSearchedProduct.itemNumber + ")";
         document.getElementById('saveBtn').innerText = "☁️ Update Product (Cloud & Local)";
         
-        // Switch to Entry/Edit tab
         switchTab('entry');
         document.querySelectorAll('.tab-btn')[0].classList.add('active');
     }
