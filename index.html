@@ -235,7 +235,6 @@
         th, td { padding: 8px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: middle; }
         th { background: #1a243f; color: var(--text-muted); font-size: 10px; text-transform: uppercase; }
         
-        /* Updated Cart Image styling so photos never get cut */
         .cart-img { 
             width: 45px; 
             height: 45px; 
@@ -261,9 +260,18 @@
             border: 1px solid var(--border);
         }
 
+        /* Updated Print CSS to completely suppress browser headers/footers */
         @media print {
-            @page { size: auto; margin: 0mm; }
-            body { background: white; color: black; padding: 10mm; margin: 0; }
+            @page { 
+                size: auto; 
+                margin: 10mm; 
+            }
+            body { 
+                background: white; 
+                color: black; 
+                padding: 0; 
+                margin: 0; 
+            }
             .no-print { display: none !important; }
             .container { background: white; color: black; box-shadow: none; border: none; margin: 0; padding: 0; }
             .brand-header h1 { color: #000; }
@@ -273,7 +281,6 @@
             th, td { border: 1px solid #000; color: black; }
             th { background: #eee !important; color: #000; }
             
-            /* Print mode image adjustment */
             .cart-img { 
                 border: none !important; 
                 background: transparent !important;
