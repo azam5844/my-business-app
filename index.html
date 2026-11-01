@@ -26,7 +26,6 @@
             color: var(--text-main); 
         }
 
-        /* Password Security Overlay */
         .auth-overlay {
             position: fixed;
             top: 0;
@@ -295,7 +294,6 @@
 </head>
 <body>
 
-<!-- Password Security Modal -->
 <div id="authOverlay" class="auth-overlay">
     <div class="auth-card">
         <h2>AMASS HANDICRAFTS</h2>
@@ -319,7 +317,6 @@
     <button class="tab-btn" onclick="switchTab('quotation', event)">📄 Quotation</button>
 </div>
 
-<!-- Tab 1: Product Entry / Edit -->
 <div id="tab-entry" class="tab-content active no-print">
     <div class="container">
         <h2 id="formTitle">📦 New Product Entry</h2>
@@ -350,7 +347,6 @@
     </div>
 </div>
 
-<!-- Tab 2: Search -->
 <div id="tab-search" class="tab-content no-print">
     <div class="container">
         <h2>
@@ -381,7 +377,6 @@
     </div>
 </div>
 
-<!-- Tab 3: Quotation Sheet -->
 <div id="tab-quotation" class="tab-content active-print">
     <div class="container" id="printArea">
         <div class="brand-header">
@@ -632,6 +627,7 @@
         }
     }
 
+    // Exact original working search logic restored perfectly
     async function searchProduct() {
         const rawQuery = document.getElementById('searchItemNo').value.trim();
         const resultDiv = document.getElementById('searchResult');
@@ -667,15 +663,16 @@
             return;
         }
 
-        // Ultra-flexible normalization: removes all spaces, hyphens, and converts to lowercase
-        const cleanQuery = rawQuery.toLowerCase().replace(/[\s-]+/g, '');
+        const cleanQuery = rawQuery.toLowerCase().replace(/\s+/g, '');
+        const numericQuery = rawQuery.replace(/^0+/, '').toLowerCase();
 
         const found = allProducts.find(p => {
             const itemNo = String(p.itemNumber || "").trim();
-            const cleanItem = itemNo.toLowerCase().replace(/[\s-]+/g, '');
+            const cleanItem = itemNo.toLowerCase().replace(/\s+/g, '');
+            const numericItem = itemNo.replace(/^0+/, '').toLowerCase();
 
             if (cleanItem === cleanQuery) return true;
-            if (itemNo.toLowerCase() === rawQuery.toLowerCase()) return true;
+            if (numericItem !== "" && numericQuery !== "" && numericItem === numericQuery) return true;
 
             return false;
         });
