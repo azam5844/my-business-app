@@ -670,7 +670,6 @@
         const cleanQuery = rawQuery.toLowerCase().replace(/\s+/g, '');
         const numericQuery = rawQuery.replace(/^0+/, '').toLowerCase();
 
-        // Enhanced flexible search supporting spaces and dashes (e.g. AMSH-347MT vs AMSH347MT)
         const found = allProducts.find(p => {
             const itemNo = String(p.itemNumber || "").trim();
             const cleanItem = itemNo.toLowerCase().replace(/\s+/g, '').replace(/-/g, '');
@@ -782,7 +781,7 @@
         csv += "Item Number,Description,Size,Price (INR),Quantity,Total Amount (INR)\n";
 
         let grandTotal = 0;
- wale       quotationCart.forEach(item => {
+        quotationCart.forEach(item => {
             let cleanDesc = item.description.replace(/"/g, '""').replace(/(\r\n|\n|\r)/gm, " ");
             let itemTotal = item.price * item.qty;
             grandTotal += itemTotal;
