@@ -667,18 +667,15 @@
             return;
         }
 
-        const cleanQuery = rawQuery.toLowerCase().replace(/\s+/g, '');
-        const numericQuery = rawQuery.replace(/^0+/, '').toLowerCase();
+        // Ultra-flexible normalization: removes all spaces, hyphens, and converts to lowercase
+        const cleanQuery = rawQuery.toLowerCase().replace(/[\s-]+/g, '');
 
         const found = allProducts.find(p => {
             const itemNo = String(p.itemNumber || "").trim();
-            const cleanItem = itemNo.toLowerCase().replace(/\s+/g, '').replace(/-/g, '');
-            const cleanUserQuery = cleanQuery.replace(/-/g, '');
-            const numericItem = itemNo.replace(/^0+/, '').toLowerCase();
+            const cleanItem = itemNo.toLowerCase().replace(/[\s-]+/g, '');
 
-            if (cleanItem === cleanUserQuery) return true;
+            if (cleanItem === cleanQuery) return true;
             if (itemNo.toLowerCase() === rawQuery.toLowerCase()) return true;
-            if (numericItem !== "" && numericQuery !== "" && numericItem === numericQuery) return true;
 
             return false;
         });
