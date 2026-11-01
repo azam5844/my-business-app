@@ -232,9 +232,18 @@
         }
 
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
-        th, td { padding: 8px; text-align: left; border-bottom: 1px solid var(--border); }
+        th, td { padding: 8px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: middle; }
         th { background: #1a243f; color: var(--text-muted); font-size: 10px; text-transform: uppercase; }
-        .cart-img { width: 34px; height: 34px; object-fit: cover; border-radius: 4px; border: none; }
+        
+        .cart-img { 
+            width: 45px; 
+            height: 45px; 
+            object-fit: contain; 
+            background: #ffffff;
+            border-radius: 4px; 
+            display: block;
+        }
+
         .qty-input { width: 45px; padding: 4px; text-align: center; font-size: 12px; background: #0b0f19; color: white; border: 1px solid var(--border); border-radius: 4px; }
 
         .total-box {
@@ -252,8 +261,16 @@
         }
 
         @media print {
-            @page { size: auto; margin: 0mm; }
-            body { background: white; color: black; padding: 10mm; margin: 0; }
+            @page { 
+                size: auto; 
+                margin: 10mm; 
+            }
+            body { 
+                background: white; 
+                color: black; 
+                padding: 0; 
+                margin: 0; 
+            }
             .no-print { display: none !important; }
             .container { background: white; color: black; box-shadow: none; border: none; margin: 0; padding: 0; }
             .brand-header h1 { color: #000; }
@@ -262,7 +279,15 @@
             table { border: 1px solid #000; color: black; font-size: 11px; }
             th, td { border: 1px solid #000; color: black; }
             th { background: #eee !important; color: #000; }
-            .cart-img { border: none !important; }
+            
+            .cart-img { 
+                border: none !important; 
+                background: transparent !important;
+                width: 45px;
+                height: 45px;
+                object-fit: contain;
+            }
+
             .qty-input { border: none; background: transparent; color: black; font-weight: bold; text-align: left; -webkit-appearance: none; margin: 0; }
             .total-box { background: white; color: black; border: 1px solid #000; }
         }
@@ -450,7 +475,6 @@
     let currentSearchedProduct = null;
     let quotationCart = [];
 
-    // Form submission for both new entry and update
     document.getElementById('productForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const saveBtn = document.getElementById('saveBtn');
@@ -524,7 +548,6 @@
             };
             reader.readAsDataURL(photoInput.files[0]);
         } else {
-            // If editing and no new photo selected, use the existing photo from currentSearchedProduct
             let existingPhoto = currentSearchedProduct ? currentSearchedProduct.photo : "";
             if(!existingPhoto) {
                 let localProducts = JSON.parse(localStorage.getItem('amassCloudSync')) || [];
@@ -538,18 +561,15 @@
     function loadProductForEdit() {
         if(!currentSearchedProduct) return;
         
-        // Populate form with current searched product details
         document.getElementById('itemNumber').value = currentSearchedProduct.itemNumber;
-        document.getElementById('itemNumber').readOnly = true; // Item number shouldn't change during edit
+        document.getElementById('itemNumber').readOnly = true;
         document.getElementById('productDesc').value = currentSearchedProduct.description;
         document.getElementById('productSize').value = currentSearchedProduct.size;
         document.getElementById('productPrice').value = currentSearchedProduct.price;
         
-        // Change UI header to indicate Edit mode
         document.getElementById('formTitle').innerText = "✏️ Edit Product (" + currentSearchedProduct.itemNumber + ")";
         document.getElementById('saveBtn').innerText = "☁️ Update Product (Cloud & Local)";
         
-        // Switch to Entry/Edit tab
         switchTab('entry');
         document.querySelectorAll('.tab-btn')[0].classList.add('active');
     }
@@ -650,12 +670,15 @@
         const cleanQuery = rawQuery.toLowerCase().replace(/\s+/g, '');
         const numericQuery = rawQuery.replace(/^0+/, '').toLowerCase();
 
+        // Enhanced flexible search supporting spaces and dashes (e.g. AMSH-347MT vs AMSH347MT)
         const found = allProducts.find(p => {
             const itemNo = String(p.itemNumber || "").trim();
-            const cleanItem = itemNo.toLowerCase().replace(/\s+/g, '');
+            const cleanItem = itemNo.toLowerCase().replace(/\s+/g, '').replace(/-/g, '');
+            const cleanUserQuery = cleanQuery.replace(/-/g, '');
             const numericItem = itemNo.replace(/^0+/, '').toLowerCase();
 
-            if (cleanItem === cleanQuery) return true;
+            if (cleanItem === cleanUserQuery) return true;
+            if (itemNo.toLowerCase() === rawQuery.toLowerCase()) return true;
             if (numericItem !== "" && numericQuery !== "" && numericItem === numericQuery) return true;
 
             return false;
@@ -759,7 +782,7 @@
         csv += "Item Number,Description,Size,Price (INR),Quantity,Total Amount (INR)\n";
 
         let grandTotal = 0;
-        quotationCart.forEach(item => {
+ wale       quotationCart.forEach(item => {
             let cleanDesc = item.description.replace(/"/g, '""').replace(/(\r\n|\n|\r)/gm, " ");
             let itemTotal = item.price * item.qty;
             grandTotal += itemTotal;
