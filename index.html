@@ -21,10 +21,7 @@
 
         body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-            background: var(--bg-color); 
-            margin: 0; 
-            padding: 15px; 
-            color: var(--text-main); 
+            background: var(--bg-color); margin: 0; padding: 15px; color: var(--text-main); 
         }
 
         .auth-overlay {
@@ -282,6 +279,7 @@
         </div>
     </div>
 </div>
+
 <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzGFDoSa39wpPPcoER77J0NGWhlWmCm_niqTg8UsCcG3skKK_eoIqNxDzCSq4kuEhh9/exec";
 
@@ -494,6 +492,7 @@
         }
     }
 
+    // STRICT EXACT MATCHING FIX (Galat product nahi aayega)
     async function searchProduct() {
         const rawQuery = document.getElementById('searchItemNo').value.trim();
         const resultDiv = document.getElementById('searchResult');
@@ -515,7 +514,7 @@
                 localStorage.setItem('amassCloudSync', JSON.stringify(cloudData));
             }
         } catch(err) {
-            console.log("Cloud fetch error during search, falling back to local storage");
+            console.log("Cloud fetch error, using local storage");
         }
 
         if(!allProducts || allProducts.length === 0) {
@@ -530,18 +529,11 @@
         }
 
         const cleanQuery = rawQuery.toLowerCase().replace(/\s+/g, '');
-        const numericQuery = rawQuery.replace(/^0+/, '').toLowerCase();
 
         const found = allProducts.find(p => {
             const itemNo = String(p.itemNumber || "").trim();
             const cleanItem = itemNo.toLowerCase().replace(/\s+/g, '');
-            const numericItem = itemNo.replace(/^0+/, '').toLowerCase();
-
-            if (cleanItem === cleanQuery) return true;
-            if (numericItem !== "" && numericQuery !== "" && numericItem === numericQuery) return true;
-            if (cleanItem.includes(cleanQuery) || cleanQuery.includes(cleanItem)) return true;
-
-            return false;
+            return cleanItem === cleanQuery;
         });
 
         if(found) {
@@ -555,7 +547,7 @@
             document.getElementById('addQty').value = 1;
         } else {
             currentSearchedProduct = null;
-            alert("Item Number not found! Make sure you typed the correct number.");
+            alert("Item Number not found! Make sure you typed the exact number.");
         }
     }
 
