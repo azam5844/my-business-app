@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AMASS HANDICRAFTS - Cloud Quotation System</title>
+    <!-- Include html2pdf library for seamless PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
             --primary: #818cf8;
@@ -19,7 +21,7 @@
         }
 
         body { 
-            font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
             background: var(--bg-color); 
             margin: 0; 
             padding: 15px; 
@@ -50,7 +52,7 @@
             width: 100%;
             max-width: 360px;
             box-sizing: border-box;
-            text-align: center !important;
+            text-align: center;
         }
 
         .auth-card h2 { 
@@ -58,18 +60,12 @@
             font-size: 20px; 
             margin-top: 0; 
             margin-bottom: 8px; 
-            display: block !important; 
-            text-align: center !important; 
-            width: 100% !important; 
         }
         
         .auth-card p { 
             color: var(--text-muted); 
             font-size: 13px; 
             margin-bottom: 20px; 
-            display: block !important;
-            text-align: center !important; 
-            width: 100% !important; 
         }
 
         .auth-card .form-group {
@@ -221,7 +217,6 @@
         .brand-header p { margin: 4px 0 0 0; font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; }
 
         #quotationDate {
-            display: none;
             position: absolute;
             top: 0;
             left: 0;
@@ -259,37 +254,16 @@
             border: 1px solid var(--border);
         }
 
-        @media print {
-            @page { 
-                size: auto; 
-                margin: 10mm; 
-            }
-            body { 
-                background: white; 
-                color: black; 
-                padding: 0; 
-                margin: 0; 
-            }
-            .no-print { display: none !important; }
-            .container { background: white; color: black; box-shadow: none; border: none; margin: 0; padding: 0; }
-            .brand-header h1 { color: #000; }
-            .brand-header p { color: #555; }
-            #quotationDate { display: block; color: black; }
-            table { border: 1px solid #000; color: black; font-size: 11px; }
-            th, td { border: 1px solid #000; color: black; }
-            th { background: #eee !important; color: #000; }
-            
-            .cart-img { 
-                border: none !important; 
-                background: transparent !important;
-                width: 45px;
-                height: 45px;
-                object-fit: contain;
-            }
-
-            .qty-input { border: none; background: transparent; color: black; font-weight: bold; text-align: left; -webkit-appearance: none; margin: 0; }
-            .total-box { background: white; color: black; border: 1px solid #000; }
+        /* Printable / Export Styling */
+        .pdf-export-mode {
+            background: #ffffff !important;
+            color: #000000 !important;
+            padding: 20px !important;
         }
+        .pdf-export-mode table { border: 1px solid #ddd !important; }
+        .pdf-export-mode th { background: #f3f4f6 !important; color: #111827 !important; }
+        .pdf-export-mode td { border-bottom: 1px solid #ddd !important; color: #111827 !important; }
+        .pdf-export-mode .total-box { background: #f9fafb !important; color: #059669 !important; border: 1px solid #ddd !important; }
     </style>
 </head>
 <body>
@@ -306,113 +280,115 @@
     </div>
 </div>
 
-<div class="app-header no-print">
-    <h1>🚀 AMASS HANDICRAFTS</h1>
-    <p>Cloud Synchronized Business Manager</p>
-</div>
-
-<div class="nav-tabs no-print">
-    <button class="tab-btn active" onclick="switchTab('entry', event)">➕ Add Product</button>
-    <button class="tab-btn" onclick="switchTab('search', event)">🔍 Search & Add</button>
-    <button class="tab-btn" onclick="switchTab('quotation', event)">📄 Quotation</button>
-</div>
-
-<div id="tab-entry" class="tab-content active no-print">
-    <div class="container">
-        <h2 id="formTitle">📦 New Product Entry</h2>
-        <form id="productForm">
-            <div class="form-group">
-                <label>Item Number (Unique ID)</label>
-                <input type="text" id="itemNumber" required placeholder="e.g. 00022 or AMSH-136">
-            </div>
-            <div class="form-group">
-                <label>Product Photo <span id="photoNote" style="font-size:10px; color:var(--text-muted);">(Leave empty to keep existing photo when editing)</span></label>
-                <input type="file" id="productPhoto" accept="image/*">
-            </div>
-            <div class="form-group">
-                <label>Description / Name</label>
-                <textarea id="productDesc" rows="2" required placeholder="Enter product details..."></textarea>
-            </div>
-            <div class="form-group">
-                <label>Size</label>
-                <input type="text" id="productSize" required placeholder="e.g. Medium / 30x30">
-            </div>
-            <div class="form-group">
-                <label>Price (Per Piece ₹)</label>
-                <input type="number" id="productPrice" required placeholder="0.00">
-            </div>
-            <button type="submit" id="saveBtn">☁️ Save Product (Cloud & Local)</button>
-        </form>
-        <div id="msg" class="success-msg"></div>
+<div id="appContainer" style="display:none;">
+    <div class="app-header no-print">
+        <h1>🚀 AMASS HANDICRAFTS</h1>
+        <p>Cloud Synchronized Business Manager</p>
     </div>
-</div>
 
-<div id="tab-search" class="tab-content no-print">
-    <div class="container">
-        <h2>
-            <span>🔍 Search Inventory</span>
-            <button type="button" class="btn-sync" onclick="syncCloudData()">🔄 Sync Cloud</button>
-        </h2>
-        <div class="form-group search-box" style="margin-bottom:0;">
-            <input type="text" id="searchItemNo" placeholder="Enter Item Number (e.g. 00022)..." onkeydown="handleSearchKey(event)">
-            <button type="button" onclick="searchProduct()">Find</button>
-        </div>
-        <div id="searchLoading" class="loading-msg" style="display:none;">☁️ Searching Cloud & Local Database...</div>
-        
-        <div id="searchResult" class="result-card">
-            <img id="resPhoto" src="" alt="Photo">
-            <div class="product-details">
-                <p><strong>Item No:</strong> <span id="resItemNo"></span></p>
-                <p><strong>Desc:</strong> <span id="resDesc"></span></p>
-                <p><strong>Size:</strong> <span id="resSize"></span></p>
-                <p><strong>Price:</strong> ₹<span id="resPrice"></span></p>
-            </div>
-            <div class="search-qty-box">
-                <label style="margin:0;">Select Quantity:</label>
-                <input type="number" id="addQty" value="1" min="1">
-            </div>
-            <button class="btn-add" onclick="addToQuotation()">+ Add to Quotation</button>
-            <button class="btn-edit-prod" onclick="loadProductForEdit()">✏️ Edit Product Details</button>
+    <div class="nav-tabs no-print">
+        <button class="tab-btn active" onclick="switchTab('entry', event)">➕ Add Product</button>
+        <button class="tab-btn" onclick="switchTab('search', event)">🔍 Search & Add</button>
+        <button class="tab-btn" onclick="switchTab('quotation', event)">📄 Quotation</button>
+    </div>
+
+    <div id="tab-entry" class="tab-content active no-print">
+        <div class="container">
+            <h2 id="formTitle">📦 New Product Entry</h2>
+            <form id="productForm">
+                <div class="form-group">
+                    <label>Item Number (Unique ID)</label>
+                    <input type="text" id="itemNumber" required placeholder="e.g. 00022 or AMSH-136">
+                </div>
+                <div class="form-group">
+                    <label>Product Photo <span id="photoNote" style="font-size:10px; color:var(--text-muted);">(Leave empty to keep existing photo when editing)</span></label>
+                    <input type="file" id="productPhoto" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label>Description / Name</label>
+                    <textarea id="productDesc" rows="2" required placeholder="Enter product details..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Size</label>
+                    <input type="text" id="productSize" required placeholder="e.g. Medium / 30x30">
+                </div>
+                <div class="form-group">
+                    <label>Price (Per Piece ₹)</label>
+                    <input type="number" id="productPrice" required placeholder="0.00">
+                </div>
+                <button type="submit" id="saveBtn">☁️ Save Product (Cloud & Local)</button>
+            </form>
+            <div id="msg" class="success-msg"></div>
         </div>
     </div>
-</div>
 
-<div id="tab-quotation" class="tab-content active-print">
-    <div class="container" id="printArea">
-        <div class="brand-header">
-            <div id="quotationDate">Date: --/--/----</div>
-            <h1>AMASS HANDICRAFTS</h1>
-            <p>Official Quotation & Invoice Summary</p>
+    <div id="tab-search" class="tab-content no-print">
+        <div class="container">
+            <h2>
+                <span>🔍 Search Inventory</span>
+                <button type="button" class="btn-sync" onclick="syncCloudData()">🔄 Sync Cloud</button>
+            </h2>
+            <div class="form-group search-box" style="margin-bottom:0;">
+                <input type="text" id="searchItemNo" placeholder="Enter Item Number (e.g. 00022)..." onkeydown="handleSearchKey(event)">
+                <button type="button" onclick="searchProduct()">Find</button>
+            </div>
+            <div id="searchLoading" class="loading-msg" style="display:none;">☁️ Searching Cloud & Local Database...</div>
+            
+            <div id="searchResult" class="result-card">
+                <img id="resPhoto" src="" alt="Photo">
+                <div class="product-details">
+                    <p><strong>Item No:</strong> <span id="resItemNo"></span></p>
+                    <p><strong>Desc:</strong> <span id="resDesc"></span></p>
+                    <p><strong>Size:</strong> <span id="resSize"></span></p>
+                    <p><strong>Price:</strong> ₹<span id="resPrice"></span></p>
+                </div>
+                <div class="search-qty-box">
+                    <label style="margin:0;">Select Quantity:</label>
+                    <input type="number" id="addQty" value="1" min="1">
+                </div>
+                <button class="btn-add" onclick="addToQuotation()">+ Add to Quotation</button>
+                <button class="btn-edit-prod" onclick="loadProductForEdit()">✏️ Edit Product Details</button>
+            </div>
         </div>
+    </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Photo</th>
-                    <th>Item</th>
-                    <th>Desc</th>
-                    <th>Size</th>
-                    <th>Price</th>
-                    <th>Qty</th>
-                    <th>Total</th>
-                    <th class="no-print">Act</th>
-                </tr>
-            </thead>
-            <tbody id="cartBody">
-                <tr>
-                    <td colspan="8" style="text-align:center; color:var(--text-muted); padding: 25px;">No products added yet. Click 'Search & Add' tab to select products.</td>
-                </tr>
-            </tbody>
-        </table>
-        
-        <div class="total-box">
-            <span>Total Amount:</span>
-            <span>₹<span id="totalPrice">0</span></span>
-        </div>
+    <div id="tab-quotation" class="tab-content">
+        <div class="container" id="printArea">
+            <div class="brand-header">
+                <div id="quotationDate">Date: --/--/----</div>
+                <h1>AMASS HANDICRAFTS</h1>
+                <p>Official Quotation & Invoice Summary</p>
+            </div>
 
-        <div class="action-btn-group no-print">
-            <button class="btn-print" onclick="prepareAndPrint()">🖨️ Save PDF</button>
-            <button class="btn-excel" onclick="exportToExcel()">📊 Export Excel</button>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Photo</th>
+                        <th>Item</th>
+                        <th>Desc</th>
+                        <th>Size</th>
+                        <th>Price</th>
+                        <th>Qty</th>
+                        <th>Total</th>
+                        <th class="no-print">Act</th>
+                    </tr>
+                </thead>
+                <tbody id="cartBody">
+                    <tr>
+                        <td colspan="8" style="text-align:center; color:var(--text-muted); padding: 25px;">No products added yet. Click 'Search & Add' tab to select products.</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="total-box">
+                <span>Total Amount:</span>
+                <span>₹<span id="totalPrice">0</span></span>
+            </div>
+
+            <div class="action-btn-group no-print">
+                <button class="btn-print" onclick="prepareAndPrintPDF()">🖨️ Save PDF</button>
+                <button class="btn-excel" onclick="exportToExcel()">📊 Export Excel</button>
+            </div>
         </div>
     </div>
 </div>
@@ -423,6 +399,7 @@
     window.addEventListener('DOMContentLoaded', () => {
         if (sessionStorage.getItem('amassAuthenticated') === 'true') {
             document.getElementById('authOverlay').style.display = 'none';
+            document.getElementById('appContainer').style.display = 'block';
         }
     });
 
@@ -433,6 +410,7 @@
         if (inputVal === 'Amass123@') {
             sessionStorage.setItem('amassAuthenticated', 'true');
             document.getElementById('authOverlay').style.display = 'none';
+            document.getElementById('appContainer').style.display = 'block';
         } else {
             errorDiv.innerText = "❌ Incorrect Password! Please try again.";
             document.getElementById('authPassword').value = "";
@@ -464,7 +442,7 @@
         } else if(tabName === 'quotation') {
             document.getElementById('tab-quotation').classList.add('active');
         }
-        if(event) event.currentTarget.classList.add('active');
+        if(event && event.currentTarget) event.currentTarget.classList.add('active');
     }
 
     let currentSearchedProduct = null;
@@ -627,7 +605,6 @@
         }
     }
 
-    // Exact original working search logic restored perfectly
     async function searchProduct() {
         const rawQuery = document.getElementById('searchItemNo').value.trim();
         const resultDiv = document.getElementById('searchResult');
@@ -749,7 +726,7 @@
         renderCart();
     }
 
-    function prepareAndPrint() {
+    function prepareAndPrintPDF() {
         if(quotationCart.length === 0) {
             alert("Quotation list is empty!");
             return;
@@ -761,7 +738,20 @@
         const year = now.getFullYear();
         document.getElementById('quotationDate').innerText = `Date: ${day}/${month}/${year}`;
         
-        window.print();
+        const printElement = document.getElementById('printArea');
+        printElement.classList.add('pdf-export-mode');
+
+        const opt = {
+            margin:       10,
+            filename:     `AMASS_Quotation_${day}_${month}_${year}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(printElement).save().then(() => {
+            printElement.classList.remove('pdf-export-mode');
+        });
     }
 
     function exportToExcel() {
@@ -779,7 +769,7 @@
             let cleanDesc = item.description.replace(/"/g, '""').replace(/(\r\n|\n|\r)/gm, " ");
             let itemTotal = item.price * item.qty;
             grandTotal += itemTotal;
-            csv += `"="\`"${String(item.itemNumber)}"""\","${cleanDesc}","${item.size}",${item.price},${item.qty},${itemTotal}\n`;
+            csv += `"="${String(item.itemNumber)}""","${cleanDesc}","${item.size}",${item.price},${item.qty},${itemTotal}\n`;
         });
 
         csv += `\n,,,,Grand Total,${grandTotal}\n`;
